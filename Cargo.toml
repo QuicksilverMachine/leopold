@@ -1,0 +1,12 @@
+[package]
+name = "leopold"
+version = "0.0.1"
+authors = ["quicksilver.machine@gmail.com"]
+edition = "2018"
+
+[dependencies]
+bollard = "0.4"
+structopt = "0.3"
+futures = "0.3.5"
+futures-util = "0.3.5"
+tokio = {version="0.2.21", features = ["full"]}

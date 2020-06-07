@@ -1,9 +1,8 @@
 use bollard::Docker;
-use bollard::image::{ListImagesOptions, CreateImageOptions, CreateImageResults};
+use bollard::image::{ListImagesOptions, CreateImageOptions};
 use bollard::container::ListContainersOptions;
 use tokio::runtime::Runtime;
 use futures::{StreamExt};
-use bollard::errors::Error;
 
 
 pub fn image_list() {

@@ -1,3 +1,3 @@
 # Leopold
 
-Leopold is a CLI tool for deployment
+Leopold is a web server for deployment management

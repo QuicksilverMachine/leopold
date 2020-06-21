@@ -988,6 +988,7 @@ dependencies = [
  "chrono",
  "futures",
  "serde",
+ "serde_json",
  "tokio",
 ]
 

@@ -1,8 +1,9 @@
 use std::io::Result;
 
 mod api;
-mod server;
-mod containers;
+mod docker;
+mod commands;
+pub mod server;
 
 
 #[actix_rt::main]

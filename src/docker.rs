@@ -8,45 +8,45 @@ use chrono::{DateTime, Utc};
 
 #[derive(Serialize, Deserialize)]
 pub struct Image {
-    name: String,
-    tag: String,
-    id: String,
-    created: DateTime<Utc>,
-    size: u64,
+    pub name: String,
+    pub tag: String,
+    pub id: String,
+    pub created: DateTime<Utc>,
+    pub size: u64,
 }
 
 #[derive(Serialize, Deserialize)]
 pub struct Container {
-    name: String,
-    created: DateTime<Utc>,
+    pub name: String,
+    pub created: DateTime<Utc>,
 }
 
 async fn api_to_image(api_image: APIImages) -> Image {
     let tags = api_image.repo_tags.unwrap();
     let full_name =  tags.first().unwrap().split(":").collect::<Vec<_>>();
-    return Image{
+    Image{
         name: full_name[0].to_string(),
         tag: full_name[1].to_string(),
         id: api_image.id,
         created: api_image.created,
         size: api_image.size,
-    };
+    }
 }
 
 async fn inspect_to_image(api_image: bollard::image::Image) -> Image {
     let tags = api_image.repo_tags;
     let full_name =  tags.first().unwrap().split(":").collect::<Vec<_>>();
-    return Image{
+    Image{
         name: full_name[0].to_string(),
         tag: full_name[1].to_string(),
         id: api_image.id,
         created: api_image.created,
         size: api_image.size,
-    };
+    }
 }
 
 async fn api_to_container(api_container: APIContainers) -> Container {
-    return Container {
+    Container {
         name: api_container.names[0].to_string(),
         created: api_container.created,
     }
@@ -59,21 +59,21 @@ pub async fn image_list() -> Vec<Image> {
     for image in images {
         image_list.push(api_to_image(image).await)
     }
-    return image_list;
+    image_list
 }
 
 
-pub async fn image_pull(image: &str) -> Image{
+pub async fn image_pull(image: String) -> Image{
     let docker = Docker::connect_with_local_defaults().unwrap();
 
     // Pull image
     docker.create_image(
-        Some(CreateImageOptions{from_image: image, ..Default::default()}),
+        Some(CreateImageOptions{from_image: image.clone(), ..Default::default()}),
         None,
     ).collect::<Vec<_>>().await;
 
     // Inspect image
-    return inspect_to_image(docker.inspect_image(image).await.unwrap()).await;
+    inspect_to_image(docker.inspect_image(image.clone().as_str()).await.unwrap()).await
 }
 
 
@@ -86,11 +86,11 @@ pub async fn container_list () -> Vec<Container> {
     for container in containers {
         container_list.push( api_to_container(container).await);
     }
-    return container_list;
+    container_list
 }
 
 pub async fn version() -> String {
     let docker = Docker::connect_with_local_defaults().unwrap();
     let version = docker.version().await.unwrap();
-    return version.version
+    version.version
 }

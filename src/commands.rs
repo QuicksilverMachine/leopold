@@ -26,19 +26,23 @@ pub enum Command {
 type Task = Vec<Command>;
 
 #[derive(Deserialize, Debug)]
-struct Config {
+struct Configuration {
     extends: Vec<String>,
     tasks: HashMap<String,Task>,
 }
 
-pub async fn execute_task(app: &String, task_id: &String) {
+async fn parse_configuration(app: &String) -> Configuration {
     let config_file = format!("config/{}.yaml", app);
     let mut file = File::open(config_file).unwrap();
     let mut contents = String::new();
     file.read_to_string(&mut contents).unwrap();
-    let configuration: Config = serde_yaml::from_str(&contents).unwrap();
+    let configuration: Configuration = serde_yaml::from_str(&contents).unwrap();
+    configuration
+}
 
-    println!("Processing task: {}", task_id);
+pub async fn execute_task(app: &String, task_id: &String) {
+    let configuration = parse_configuration(app).await;
+    println!("Executing task: {}", task_id);
     for command_id in &configuration.tasks[task_id] {
         execute_command(command_id).await;
     }

@@ -76,7 +76,6 @@ pub async fn image_pull(image: String) -> Image{
     inspect_to_image(docker.inspect_image(image.clone().as_str()).await.unwrap()).await
 }
 
-
 pub async fn container_list () -> Vec<Container> {
     let docker = Docker::connect_with_local_defaults().unwrap();
     let containers = docker.list_containers(

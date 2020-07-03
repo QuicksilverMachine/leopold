@@ -7,7 +7,7 @@ use crate::api;
 pub async fn run() -> Result<()> {
     HttpServer::new(|| {
         App::new()
-            .route("/commands/run", web::post().to(api::commands::run_command))
+            .route("/task/execute", web::post().to(api::commands::execute_task))
     })
         .bind("127.0.0.1:8088")?
         .run()

@@ -2,7 +2,7 @@ use serde::{Deserialize};
 
 
 #[derive(Deserialize)]
-pub struct CommandRunRequest {
-    pub command: String,
-    pub args: Vec<String>,
+pub struct TaskExecuteRequest {
+    pub app: String,
+    pub task_id: String,
 }

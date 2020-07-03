@@ -4,7 +4,7 @@ use crate::api::schema;
 use crate::commands;
 
 
-pub async fn run_command(request: web::Json<schema::CommandRunRequest>) -> impl Responder {
-    commands::run_command(&request.command, &request.args).await;
+pub async fn execute_task(request: web::Json<schema::TaskExecuteRequest>) -> impl Responder {
+    commands::execute_task(&request.app, &request.task_id).await;
     HttpResponse::Ok().body("OK")
 }

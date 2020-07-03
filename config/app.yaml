@@ -2,21 +2,15 @@ extends:
   - master
 tasks:
   install:
-    - command: DockerImagePull
-      parameters:
+    - id: DockerImagePull
+      command:
         description: Pull docker image
-        args:
-          - nginx
-          - latest
-        kwargs1: {}
-    - command: DockerImageList
-      parameters:
+        name: nginx
+        version: latest
+    - id: DockerImageList
+      command:
         description: List docker images
-        args: []
-        kwargs2: {}
   docker_version:
-    - command: DockerEngineVersion
-      parameters:
+    - id: DockerEngineVersion
+      command:
         description: Display docker engine version
-        args: []
-        kwargs3: {}

@@ -44,58 +44,59 @@ async fn docker_connection() -> Result<Docker, DockerError> {
     }
 }
 
-/// Extract image name and version from api image
-async fn image_name_and_version(tags: Vec<String>) -> Result<(String, String), DockerError>{
-    match tags.first() {
-        Some(first_tag) => {
-            let items: Vec<String> = first_tag.split(":").map(|s| s.to_string()).collect();
-            if items.len() == 2 {
-                Ok((items[0].to_string(), items[1].to_string()))
-            } else {
-                Err(
-                    DockerError{ message: String::from("Could not parse image name and version, invalid tag.") }
-                )
-            }
-        },
-        None => Err(
-            DockerError{ message: String::from("Cannot parse image name and version, no tags found.") }
-        ),
+/// Convert APIImage to local image format
+impl From<APIImages> for Image {
+    fn from(api_image: APIImages) -> Self {
+        let default_tag = "<none>:<none>".to_string();
+        let default_tags = vec!["<none>:<none>".to_string()];
+        let tags = api_image.repo_tags.unwrap_or(default_tags);
+        let data = {
+            tags
+                .first()
+                .unwrap_or(&default_tag)
+                .split(":")
+                .collect::<Vec<_>>()
+        };
+        Image{
+            name: data[0].to_string(),
+            tag: data[1].to_string(),
+            id: api_image.id,
+            created: api_image.created,
+            size: api_image.size,
+        }
     }
 }
 
-
-/// Return docker api image converted to local image format
-async fn api_to_image(api_image: APIImages) -> Result<Image, DockerError> {
-    let tags = api_image.repo_tags.unwrap_or_default();
-    let (name, version) = image_name_and_version(tags).await?;
-    Ok(Image{
-        name,
-        tag: version,
-        id: api_image.id,
-        created: api_image.created,
-        size: api_image.size,
-    })
+/// Convert bollard inspect image to local image format
+impl From<bollard::image::Image> for Image {
+    fn from(api_image: bollard::image::Image) -> Self {
+        let default_tag = "<none>:<none>".to_string();
+        let tags = api_image.repo_tags;
+        let data = {
+            tags
+                .first()
+                .unwrap_or(&default_tag)
+                .split(":")
+                .collect::<Vec<_>>()
+        };
+        Image{
+            name: data[0].to_string(),
+            tag: data[1].to_string(),
+            id: api_image.id,
+            created: api_image.created,
+            size: api_image.size,
+        }
+    }
 }
 
-/// Return docker api inspect image converted to local image format
-async fn inspect_to_image(api_image: bollard::image::Image) -> Result<Image, DockerError> {
-    let tags = api_image.repo_tags;
-    let (name, version) = image_name_and_version(tags).await?;
-    Ok(Image{
-        name,
-        tag: version,
-        id: api_image.id,
-        created: api_image.created,
-        size: api_image.size,
-    })
-}
-
-/// Return docker api container converted to local container format
-async fn api_to_container(api_container: APIContainers) -> Result<Container, DockerError> {
-    Ok(Container {
-        name: api_container.names[0].to_string(),
-        created: api_container.created,
-    })
+/// Convert APIContainers to local container format
+impl From<APIContainers> for Container {
+    fn from(api_container: APIContainers) -> Self {
+        Container {
+            name: api_container.names[0].to_string(),
+            created: api_container.created,
+        }
+    }
 }
 
 /// Return list of downloaded images
@@ -104,8 +105,9 @@ pub async fn image_list() -> Result<Vec<Image>, DockerError> {
     let images =  docker.list_images(None::<ListImagesOptions<String>>).await?;
     let mut image_list:Vec<Image> = Vec::new();
     for image in images {
-        image_list.push(api_to_image(image).await?)
+        image_list.push(Image::from(image))
     }
+    let image_list = image_list;
     Ok(image_list)
 }
 
@@ -120,7 +122,7 @@ pub async fn image_pull(image: &str) -> Result<Image, DockerError>{
     ).collect::<Vec<_>>().await;
 
     // Inspect image
-    Ok(inspect_to_image(docker.inspect_image(image).await?).await?)
+    Ok(Image::from(docker.inspect_image(image).await?))
 }
 
 /// Remove an image from system
@@ -142,8 +144,9 @@ pub async fn container_list() -> Result<Vec<Container>, DockerError> {
     ).await?;
     let mut container_list:Vec<Container> = Vec::new();
     for container in containers {
-        container_list.push( api_to_container(container).await?);
+        container_list.push(Container::from(container));
     }
+    let container_list = container_list;
     Ok(container_list)
 }
 

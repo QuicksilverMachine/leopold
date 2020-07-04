@@ -4,16 +4,16 @@ use std::collections::HashMap;
 
 use serde::{Deserialize};
 
-use crate::commands::command::{Command};
+use crate::commands::Command;
 
 
 #[derive(Deserialize, Debug)]
-pub(crate) struct Configuration {
-    extends: Vec<String>,
-    pub(crate) tasks: HashMap<String,Vec<Command>>,
+pub struct Configuration {
+    pub extends: Vec<String>,
+    pub tasks: HashMap<String,Vec<Command>>,
 }
 
-pub(crate) async fn parse_configuration(app: &str) -> Configuration {
+pub async fn parse_configuration(app: &str) -> Configuration {
     let config_file = format!("config/{}.yaml", app);
     let mut file = File::open(config_file).unwrap();
     let mut contents = String::new();

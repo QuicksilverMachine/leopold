@@ -1,9 +1,9 @@
 use bollard::Docker;
-use bollard::image::{ListImagesOptions, CreateImageOptions, APIImages};
+use bollard::image::{ APIImages, CreateImageOptions, ListImagesOptions, RemoveImageOptions};
 use bollard::container::{ListContainersOptions, APIContainers};
-use serde::{Deserialize, Serialize};
-use futures::{StreamExt};
 use chrono::{DateTime, Utc};
+use futures::{StreamExt};
+use serde::{Deserialize, Serialize};
 
 
 #[derive(Serialize, Deserialize)]
@@ -62,8 +62,7 @@ pub async fn image_list() -> Vec<Image> {
     image_list
 }
 
-
-pub async fn image_pull(image: String) -> Image{
+pub async fn image_pull(image: &str) -> Image{
     let docker = Docker::connect_with_local_defaults().unwrap();
 
     // Pull image
@@ -73,7 +72,16 @@ pub async fn image_pull(image: String) -> Image{
     ).collect::<Vec<_>>().await;
 
     // Inspect image
-    inspect_to_image(docker.inspect_image(image.clone().as_str()).await.unwrap()).await
+    inspect_to_image(docker.inspect_image(image).await.unwrap()).await
+}
+
+pub async fn image_remove(image: &str, force: bool) {
+    let docker = Docker::connect_with_local_defaults().unwrap();
+    docker.remove_image(
+        &image,
+        Some(RemoveImageOptions { force, ..Default::default() }),
+        None
+    ).await.unwrap();
 }
 
 pub async fn container_list () -> Vec<Container> {

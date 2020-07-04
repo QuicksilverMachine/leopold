@@ -12,4 +12,7 @@ impl DockerEngineVersion {
         let version = docker::version().await;
         println!("Docker engine version: {}", version);
     }
+
+    #[allow(dead_code)]
+    pub async fn undo(&self) {}
 }

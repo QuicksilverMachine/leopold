@@ -17,9 +17,9 @@ pub enum Command {
 
 pub async fn execute_command(command_id: &Command) {
     match command_id {
-        Command::DockerImagePull{command} => command.execute().await,
-        Command::DockerImageList{command} => command.execute().await,
-        Command::DockerContainerList{command} => command.execute().await,
-        Command::DockerEngineVersion{command} => command.execute().await,
+        Command::DockerImagePull{ command} => command.execute().await,
+        Command::DockerImageList{ command} => command.execute().await,
+        Command::DockerContainerList{ command} => command.execute().await,
+        Command::DockerEngineVersion{ command} => command.execute().await,
     }
 }

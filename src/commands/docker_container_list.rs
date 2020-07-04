@@ -14,4 +14,7 @@ impl DockerContainerList {
             println!("{}", container.name)
         }
     }
+
+    #[allow(dead_code)]
+    pub async fn undo(&self) {}
 }

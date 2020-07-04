@@ -4,6 +4,7 @@ mod api;
 mod docker;
 mod configuration;
 mod commands;
+mod errors;
 mod server;
 mod tasks;
 

@@ -5,6 +5,8 @@ use chrono::{DateTime, Utc};
 use futures::{StreamExt};
 use serde::{Deserialize, Serialize};
 
+use crate::errors::DockerError;
+
 
 #[derive(Serialize, Deserialize)]
 pub struct Image {
@@ -19,17 +21,6 @@ pub struct Image {
 pub struct Container {
     pub name: String,
     pub created: DateTime<Utc>,
-}
-
-#[derive(Debug)]
-pub struct DockerError {
-    pub message: String,
-}
-
-impl From<bollard::errors::Error> for DockerError {
-    fn from(error: bollard::errors::Error) -> Self {
-        DockerError{ message: error.to_string() }
-    }
 }
 
 /// Generate a docker daemon connection

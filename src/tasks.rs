@@ -1,11 +1,58 @@
 use crate::configuration::parse_configuration;
-use crate::commands::execute_command;
+use crate::commands::{Command, execute_command, revert_command};
+use crate::errors::TaskError;
 
 
-pub async fn execute_task(app: &str, task_id: &str) {
+pub async fn execute_task(app: &str, task_id: &str) -> Result<(), TaskError> {
     let configuration = parse_configuration(app).await;
     println!("Executing task: {}", task_id);
-    for command_id in &configuration.tasks[task_id] {
-        execute_command(command_id).await;
+
+    match execute_task_commands(&configuration.tasks[task_id]).await {
+        Err(error) => {
+            if error.completed_tasks.is_empty() {
+                eprintln!("Task failed: \"{}\".", task_id);
+            } else {
+                eprintln!("Task failed: \"{}\", attempting revert.", task_id);
+            }
+            match revert_task_commands(&error.completed_tasks).await {
+                Ok(_) => Ok(()),
+                Err(error) => {
+                    eprintln!("Failed to revert task \"{}\".", task_id);
+                    Err(error)
+                }
+            }
+        },
+        _ => {
+            println!("Task completed: \"{}\"", task_id);
+            Ok(())
+        }
     }
+}
+
+async fn execute_task_commands(commands: &Vec<Command>) -> Result<(), TaskError> {
+    let mut completed: Vec<Command> = Vec::new();
+    for command_id in commands {
+        match execute_command(command_id).await {
+            Err(error) => {
+                eprintln!("Command failed: \"{:?}\".", command_id);
+                Err(TaskError{ message: error.message, completed_tasks: completed.clone() })
+            },
+            Ok(_) => {
+                completed.push(command_id.clone());
+                println!("Command completed: \"{:?}\".", command_id);
+                Ok(())
+            }
+        }?;
+    }
+    Ok(())
+}
+
+async fn revert_task_commands(commands: &Vec<Command>) -> Result<(), TaskError> {
+    for command_id in commands.clone().iter().rev() {
+        match revert_command(command_id).await {
+            Err(error) => Err(TaskError{message: error.message, completed_tasks: Vec::new() }),
+            _ => Ok(())
+        }?;
+    }
+    Ok(())
 }

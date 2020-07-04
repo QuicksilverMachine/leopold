@@ -7,6 +7,8 @@ use super::schema;
 
 
 pub async fn execute_task(request: web::Json<schema::TaskExecuteRequest>) -> impl Responder {
-    tasks::execute_task(&request.app, &request.task_id).await;
-    return HttpResponse::Ok().json(json!({"message": "OK"}))
+    match tasks::execute_task(&request.app, &request.task_id).await {
+        Ok(_) => HttpResponse::Ok().json(json!({"message": "OK"})),
+        Err(error) => HttpResponse::Ok().json(json!({"message": error.message}))
+    }
 }

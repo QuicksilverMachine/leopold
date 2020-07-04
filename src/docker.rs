@@ -50,7 +50,7 @@ async fn image_name_and_version(tags: Vec<String>) -> Result<(String, String), D
         Some(first_tag) => {
             let items: Vec<String> = first_tag.split(":").map(|s| s.to_string()).collect();
             if items.len() == 2 {
-                Ok((items[0].clone(), items[1].clone()))
+                Ok((items[0].to_string(), items[1].to_string()))
             } else {
                 Err(
                     DockerError{ message: String::from("Could not parse image name and version, invalid tag.") }
@@ -115,7 +115,7 @@ pub async fn image_pull(image: &str) -> Result<Image, DockerError>{
 
     // Pull image
     docker.create_image(
-        Some(CreateImageOptions{from_image: image.clone(), ..Default::default()}),
+        Some(CreateImageOptions{from_image: image, ..Default::default()}),
         None,
     ).collect::<Vec<_>>().await;
 

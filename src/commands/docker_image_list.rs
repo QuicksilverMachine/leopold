@@ -10,11 +10,16 @@ pub struct DockerImageList {
 impl DockerImageList {
     pub async fn execute(&self) {
         let images = docker::image_list().await;
-        for image in images {
-            println!("{}", image.name)
+        match images {
+            Err(error) => eprintln!("{:?}", error),
+            Ok(images) => {
+                for image in images {
+                    println!("{}", image.name)
+                }
+            }
         }
     }
 
     #[allow(dead_code)]
-    pub async fn undo(&self) {}
+    pub async fn revert(&self) {}
 }

@@ -15,13 +15,17 @@ impl DockerImagePull {
     }
 
     pub async fn execute(&self) {
-        let _ = docker::image_pull(&self.image()).await;
-        println!("Image pulled");
+        match docker::image_pull(&self.image()).await {
+            Err(error) => eprintln!("Error: {:?}", error),
+            Ok(_) => println!("Image pulled"),
+        }
     }
 
     #[allow(dead_code)]
-    pub async fn undo(&self) {
-        docker::image_remove(&self.image(), true).await;
-        println!("Image removed");
+    pub async fn revert(&self) {
+        match docker::image_remove(&self.image(), true).await {
+            Err(error) => eprintln!("Error: {:?}", error),
+            Ok(_) => println!("Image removed"),
+        }
     }
 }

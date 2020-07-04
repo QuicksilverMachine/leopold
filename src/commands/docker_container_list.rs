@@ -9,12 +9,17 @@ pub struct DockerContainerList {
 
 impl DockerContainerList {
     pub async fn execute(&self) {
-        let containers = docker::container_list().await;
-        for container in containers {
-            println!("{}", container.name)
+        let container_list = docker::container_list().await;
+        match container_list {
+            Err(error) => eprintln!("Error: {:?}", error),
+            Ok(containers) => {
+                for container in containers {
+                    println!("{}", container.name)
+                }
+            }
         }
     }
 
     #[allow(dead_code)]
-    pub async fn undo(&self) {}
+    pub async fn revert(&self) {}
 }

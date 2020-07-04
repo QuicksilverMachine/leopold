@@ -9,10 +9,12 @@ pub struct DockerEngineVersion {
 
 impl DockerEngineVersion {
     pub async fn execute(&self) {
-        let version = docker::version().await;
-        println!("Docker engine version: {}", version);
+        match docker::version().await {
+            Err(error) => eprintln!("Error: {}", error.message),
+            Ok(version) => println!("Docker engine version: {}", version),
+        }
     }
 
     #[allow(dead_code)]
-    pub async fn undo(&self) {}
+    pub async fn revert(&self) {}
 }

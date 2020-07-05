@@ -14,7 +14,7 @@ impl DockerEngineVersion {
                 message: error.message,
             }),
             Ok(version) => {
-                println!("Docker engine version: {}", version);
+                println!("\tDocker engine version: {}", version);
                 Ok(())
             }
         }

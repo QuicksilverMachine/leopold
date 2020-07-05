@@ -19,7 +19,10 @@ impl DockerImagePull {
             Err(error) => Err(CommandError {
                 message: error.message,
             }),
-            Ok(_) => Ok(()),
+            Ok(_) => {
+                println!("\tImage \"{}\" pull complete.", self.image());
+                Ok(())
+            }
         }
     }
 
@@ -29,7 +32,7 @@ impl DockerImagePull {
                 message: error.message,
             }),
             Ok(_) => {
-                println!("Image removed");
+                println!("\tImage \"{}\" removed.", self.image());
                 Ok(())
             }
         }

@@ -16,7 +16,7 @@ impl DockerContainerList {
             }),
             Ok(containers) => {
                 for container in containers {
-                    println!("{}", container.name)
+                    println!("\t{}", container.name)
                 }
                 Ok(())
             }

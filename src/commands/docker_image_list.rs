@@ -16,7 +16,7 @@ impl DockerImageList {
             }),
             Ok(images) => {
                 for image in images {
-                    println!("{}", image.name)
+                    println!("\t{}:{}", image.name, image.tag)
                 }
                 Ok(())
             }

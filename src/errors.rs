@@ -1,4 +1,22 @@
+use std::error::Error;
+use std::fmt::Display;
+
+use serde::export::Formatter;
+
 use crate::commands::Command;
+
+#[derive(Debug)]
+pub struct AppConfigError {
+    pub message: String,
+}
+
+impl Error for AppConfigError {}
+
+impl Display for AppConfigError {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+        write!(f, "{}", self.message)
+    }
+}
 
 #[derive(Debug)]
 pub struct TaskError {

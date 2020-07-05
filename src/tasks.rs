@@ -36,15 +36,15 @@ pub async fn execute_task(app: String, task_id: String) {
 
 async fn execute_task_commands(commands: &Vec<Command>) -> Result<(), TaskError> {
     let mut completed: Vec<Command> = Vec::new();
-    for command_id in commands {
-        match execute_command(command_id).await {
+    for command in commands {
+        match execute_command(command).await {
             Err(error) => {
-                eprintln!("Command failed: \"{:?}\".", command_id);
+                eprintln!("Command failed: \"{:?}\".", command);
                 Err(TaskError{ message: error.message, completed_tasks: completed.clone() })
             },
             Ok(_) => {
-                completed.push(command_id.clone());
-                println!("Command completed: \"{:?}\".", command_id);
+                completed.push(command.clone());
+                println!("Command completed: \"{:?}\".", command);
                 Ok(())
             }
         }?;
@@ -53,8 +53,8 @@ async fn execute_task_commands(commands: &Vec<Command>) -> Result<(), TaskError>
 }
 
 async fn revert_task_commands(commands: &Vec<Command>) -> Result<(), TaskError> {
-    for command_id in commands.clone().iter().rev() {
-        match revert_command(command_id).await {
+    for command in commands.clone().iter().rev() {
+        match revert_command(command).await {
             Err(error) => Err(TaskError{message: error.message, completed_tasks: Vec::new() }),
             _ => Ok(())
         }?;

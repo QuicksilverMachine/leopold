@@ -16,8 +16,8 @@ pub enum Command {
     DockerEngineVersion { command: docker_engine_version::DockerEngineVersion },
 }
 
-pub async fn execute_command(command_id: &Command) -> Result<(), CommandError> {
-    match command_id {
+pub async fn execute_command(command_container: &Command) -> Result<(), CommandError> {
+    match command_container {
         Command::DockerImagePull{ command} => Ok(command.execute().await?),
         Command::DockerImageList{ command} => Ok(command.execute().await?),
         Command::DockerContainerList{ command} => Ok(command.execute().await?),
@@ -25,8 +25,8 @@ pub async fn execute_command(command_id: &Command) -> Result<(), CommandError> {
     }
 }
 
-pub async fn revert_command(command_id: &Command) -> Result<(), CommandError> {
-    match command_id {
+pub async fn revert_command(command_container: &Command) -> Result<(), CommandError> {
+    match command_container {
         Command::DockerImagePull{ command} => Ok(command.revert().await?),
         Command::DockerImageList{ command} => Ok(command.revert().await?),
         Command::DockerContainerList{ command} => Ok(command.revert().await?),

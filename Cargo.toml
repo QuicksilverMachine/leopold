@@ -5,6 +5,7 @@ authors = ["quicksilver.machine@gmail.com"]
 edition = "2018"
 
 [dependencies]
+actix = "0.9.0"
 actix-web = "2.0"
 actix-rt = "1.0"
 serde = { version = "1.0", features = ["derive"] }

@@ -6,9 +6,7 @@ use crate::tasks;
 use super::schema;
 
 
-pub async fn execute_task(request: web::Json<schema::TaskExecuteRequest>) -> impl Responder {
-    match tasks::execute_task(&request.app, &request.task_id).await {
-        Ok(_) => HttpResponse::Ok().json(json!({"message": "OK"})),
-        Err(error) => HttpResponse::Ok().json(json!({"message": error.message}))
-    }
+pub async fn execute(request: web::Json<schema::TaskExecuteRequest>) -> impl Responder {
+    tasks::execute(&request.app, &request.task_id).await;
+    HttpResponse::Ok().json(json!({"message": "OK"}))
 }

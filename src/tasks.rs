@@ -1,13 +1,20 @@
+use futures::{FutureExt};
+
 use crate::configuration::parse_configuration;
 use crate::commands::{Command, execute_command, revert_command};
 use crate::errors::TaskError;
 
 
-pub async fn execute_task(app: &str, task_id: &str) -> Result<(), TaskError> {
-    let configuration = parse_configuration(app).await;
+pub async fn execute(app: &str, task_id: &str) {
+    let future = execute_task(app.to_string(), task_id.to_string()).boxed_local();
+    actix::Arbiter::spawn(future);
+}
+
+pub async fn execute_task(app: String, task_id: String) {
+    let configuration = parse_configuration(&app).await;
     println!("Executing task: {}", task_id);
 
-    match execute_task_commands(&configuration.tasks[task_id]).await {
+    match execute_task_commands(&configuration.tasks[&task_id]).await {
         Err(error) => {
             if error.completed_tasks.is_empty() {
                 eprintln!("Task failed: \"{}\".", task_id);
@@ -15,18 +22,16 @@ pub async fn execute_task(app: &str, task_id: &str) -> Result<(), TaskError> {
                 eprintln!("Task failed: \"{}\", attempting revert.", task_id);
             }
             match revert_task_commands(&error.completed_tasks).await {
-                Ok(_) => Ok(()),
                 Err(error) => {
-                    eprintln!("Failed to revert task \"{}\".", task_id);
-                    Err(error)
-                }
-            }
+                    eprintln!("Failed to revert task \"{}\" due to error: {}.", task_id, error.message);
+                },
+                _ => {},
+            };
         },
         _ => {
             println!("Task completed: \"{}\"", task_id);
-            Ok(())
         }
-    }
+    };
 }
 
 async fn execute_task_commands(commands: &Vec<Command>) -> Result<(), TaskError> {

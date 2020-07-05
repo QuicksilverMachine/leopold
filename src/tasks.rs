@@ -1,7 +1,7 @@
 use futures::FutureExt;
 
 use crate::commands::{revert_command, run_command, Command};
-use crate::configuration::parse_configuration;
+use crate::configuration::app_configuration;
 use crate::errors::TaskError;
 
 pub async fn run(app: &str, task_id: &str) {
@@ -10,9 +10,24 @@ pub async fn run(app: &str, task_id: &str) {
 }
 
 pub async fn run_task(app: String, task_id: String) {
-    let configuration = parse_configuration(&app).await;
-    println!("Executing task: {}", task_id);
+    let configuration = match app_configuration(&app).await {
+        Ok(configuration) => configuration,
+        Err(error) => {
+            eprintln!(
+                "Error occurred while fetching app configuration: \"{:?}\".",
+                error.to_string()
+            );
+            return;
+        }
+    };
 
+    // Check if requested task exists for selected app
+    if !&configuration.tasks.contains_key(&task_id) {
+        eprintln!("Task not found: \"{}\" for app \"{}\".", task_id, app);
+        return;
+    }
+
+    println!("Executing task: \"{}\"", task_id);
     match run_task_commands(&configuration.tasks[&task_id]).await {
         Err(error) => {
             if error.completed_tasks.is_empty() {

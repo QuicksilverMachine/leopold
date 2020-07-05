@@ -1,5 +1,6 @@
-use actix_web::{web, App, HttpServer};
 use std::io::Result;
+
+use actix_web::{web, App, HttpServer};
 
 use crate::api;
 

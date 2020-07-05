@@ -28,8 +28,7 @@ async fn docker_connection() -> Result<Docker, DockerError> {
     let docker = Docker::connect_with_local_defaults()?;
     match docker.version().await {
         Err(error) => Err(
-            DockerError{ message: String::from(
-                format!("Cannot connect to docker daemon: {:?}", error)) }
+            DockerError{message: format!("Cannot connect to docker daemon: {:?}", error)}
         ),
         _ => Ok(docker)
     }

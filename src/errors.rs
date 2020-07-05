@@ -18,6 +18,6 @@ pub struct DockerError {
 
 impl From<bollard::errors::Error> for DockerError {
     fn from(error: bollard::errors::Error) -> Self {
-        DockerError{ message: error.to_string() }
+        DockerError{message: error.to_string()}
     }
 }

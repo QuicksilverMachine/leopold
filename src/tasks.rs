@@ -6,7 +6,9 @@ use crate::errors::TaskError;
 
 
 pub async fn execute(app: &str, task_id: &str) {
-    let future = execute_task(app.to_string(), task_id.to_string()).boxed_local();
+    let future = {
+        execute_task(app.to_string(), task_id.to_string()).boxed_local()
+    };
     actix::Arbiter::spawn(future);
 }
 
@@ -40,7 +42,7 @@ async fn execute_task_commands(commands: &Vec<Command>) -> Result<(), TaskError>
         match execute_command(command).await {
             Err(error) => {
                 eprintln!("Command failed: \"{:?}\".", command);
-                Err(TaskError{ message: error.message, completed_tasks: completed.clone() })
+                Err(TaskError{message: error.message, completed_tasks: completed.clone()})
             },
             Ok(_) => {
                 completed.push(command.clone());
@@ -55,7 +57,9 @@ async fn execute_task_commands(commands: &Vec<Command>) -> Result<(), TaskError>
 async fn revert_task_commands(commands: &Vec<Command>) -> Result<(), TaskError> {
     for command in commands.clone().iter().rev() {
         match revert_command(command).await {
-            Err(error) => Err(TaskError{message: error.message, completed_tasks: Vec::new() }),
+            Err(error) => Err(
+                TaskError{message: error.message, completed_tasks: Vec::new()}
+            ),
             _ => Ok(())
         }?;
     }

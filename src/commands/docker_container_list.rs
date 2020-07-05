@@ -1,7 +1,6 @@
 use crate::docker;
-use serde::Deserialize;
 use crate::errors::CommandError;
-
+use serde::Deserialize;
 
 #[derive(Clone, Deserialize, Debug)]
 pub struct DockerContainerList {
@@ -9,14 +8,16 @@ pub struct DockerContainerList {
 }
 
 impl DockerContainerList {
-    pub async fn execute(&self) -> Result<(), CommandError>{
+    pub async fn execute(&self) -> Result<(), CommandError> {
         let container_list = docker::container_list().await;
         match container_list {
-            Err(error) => Err(CommandError{message: error.message}),
+            Err(error) => Err(CommandError {
+                message: error.message,
+            }),
             Ok(containers) => {
                 for container in containers {
                     println!("{}", container.name)
-                };
+                }
                 Ok(())
             }
         }

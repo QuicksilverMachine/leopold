@@ -1,16 +1,15 @@
+use std::collections::HashMap;
 use std::fs::File;
 use std::io::Read;
-use std::collections::HashMap;
 
-use serde::{Deserialize};
+use serde::Deserialize;
 
 use crate::commands::Command;
-
 
 #[derive(Deserialize, Debug)]
 pub struct Configuration {
     pub extends: Vec<String>,
-    pub tasks: HashMap<String,Vec<Command>>,
+    pub tasks: HashMap<String, Vec<Command>>,
 }
 
 pub async fn parse_configuration(app: &str) -> Configuration {

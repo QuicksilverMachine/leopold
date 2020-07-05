@@ -1,10 +1,9 @@
 use crate::commands::Command;
 
-
 #[derive(Debug)]
 pub struct TaskError {
     pub message: String,
-    pub completed_tasks: Vec<Command>
+    pub completed_tasks: Vec<Command>,
 }
 
 #[derive(Debug)]
@@ -19,6 +18,8 @@ pub struct DockerError {
 
 impl From<bollard::errors::Error> for DockerError {
     fn from(error: bollard::errors::Error) -> Self {
-        DockerError{message: error.to_string()}
+        DockerError {
+            message: error.to_string(),
+        }
     }
 }

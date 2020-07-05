@@ -1,12 +1,11 @@
+use bollard::container::{APIContainers, ListContainersOptions};
+use bollard::image::{APIImages, CreateImageOptions, ListImagesOptions, RemoveImageOptions};
 use bollard::Docker;
-use bollard::image::{ APIImages, CreateImageOptions, ListImagesOptions, RemoveImageOptions};
-use bollard::container::{ListContainersOptions, APIContainers};
 use chrono::{DateTime, Utc};
-use futures::{StreamExt};
+use futures::StreamExt;
 use serde::{Deserialize, Serialize};
 
 use crate::errors::DockerError;
-
 
 #[derive(Serialize, Deserialize)]
 pub struct Image {
@@ -27,10 +26,10 @@ pub struct Container {
 async fn docker_connection() -> Result<Docker, DockerError> {
     let docker = Docker::connect_with_local_defaults()?;
     match docker.version().await {
-        Err(error) => Err(
-            DockerError{message: format!("Cannot connect to docker daemon: {:?}", error)}
-        ),
-        _ => Ok(docker)
+        Err(error) => Err(DockerError {
+            message: format!("Cannot connect to docker daemon: {:?}", error),
+        }),
+        _ => Ok(docker),
     }
 }
 
@@ -41,13 +40,12 @@ impl From<APIImages> for Image {
         let default_tags = vec!["<none>:<none>".to_string()];
         let tags = api_image.repo_tags.unwrap_or(default_tags);
         let data = {
-            tags
-                .first()
+            tags.first()
                 .unwrap_or(&default_tag)
                 .split(':')
                 .collect::<Vec<_>>()
         };
-        Image{
+        Image {
             name: data[0].to_string(),
             tag: data[1].to_string(),
             id: api_image.id,
@@ -63,13 +61,12 @@ impl From<bollard::image::Image> for Image {
         let default_tag = "<none>:<none>".to_string();
         let tags = api_image.repo_tags;
         let data = {
-            tags
-                .first()
+            tags.first()
                 .unwrap_or(&default_tag)
                 .split(':')
                 .collect::<Vec<_>>()
         };
-        Image{
+        Image {
             name: data[0].to_string(),
             tag: data[1].to_string(),
             id: api_image.id,
@@ -92,8 +89,10 @@ impl From<APIContainers> for Container {
 /// Return list of downloaded images
 pub async fn image_list() -> Result<Vec<Image>, DockerError> {
     let docker = docker_connection().await?;
-    let images =  docker.list_images(None::<ListImagesOptions<String>>).await?;
-    let mut image_list:Vec<Image> = Vec::new();
+    let images = docker
+        .list_images(None::<ListImagesOptions<String>>)
+        .await?;
+    let mut image_list: Vec<Image> = Vec::new();
     for image in images {
         image_list.push(Image::from(image))
     }
@@ -102,37 +101,51 @@ pub async fn image_list() -> Result<Vec<Image>, DockerError> {
 }
 
 /// Pull an image from repository
-pub async fn image_pull(image: &str) -> Result<Image, DockerError>{
+pub async fn image_pull(image: &str) -> Result<Image, DockerError> {
     let docker = docker_connection().await?;
 
     // Pull image
-    docker.create_image(
-        Some(CreateImageOptions{from_image: image, ..Default::default()}),
-        None,
-    ).collect::<Vec<_>>().await;
+    docker
+        .create_image(
+            Some(CreateImageOptions {
+                from_image: image,
+                ..Default::default()
+            }),
+            None,
+        )
+        .collect::<Vec<_>>()
+        .await;
 
     // Inspect image
     Ok(Image::from(docker.inspect_image(image).await?))
 }
 
 /// Remove an image from system
-pub async fn image_remove(image: &str, force: bool) -> Result<(), DockerError>{
+pub async fn image_remove(image: &str, force: bool) -> Result<(), DockerError> {
     let docker = docker_connection().await?;
-    docker.remove_image(
-        &image,
-        Some(RemoveImageOptions { force, ..Default::default() }),
-        None
-    ).await?;
+    docker
+        .remove_image(
+            &image,
+            Some(RemoveImageOptions {
+                force,
+                ..Default::default()
+            }),
+            None,
+        )
+        .await?;
     Ok(())
 }
 
 /// Return list of created containers
 pub async fn container_list() -> Result<Vec<Container>, DockerError> {
     let docker = docker_connection().await?;
-    let containers = docker.list_containers(
-        Some(ListContainersOptions::<String>{all: true, ..Default::default()})
-    ).await?;
-    let mut container_list:Vec<Container> = Vec::new();
+    let containers = docker
+        .list_containers(Some(ListContainersOptions::<String> {
+            all: true,
+            ..Default::default()
+        }))
+        .await?;
+    let mut container_list: Vec<Container> = Vec::new();
     for container in containers {
         container_list.push(Container::from(container));
     }

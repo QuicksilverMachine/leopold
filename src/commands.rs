@@ -1,36 +1,43 @@
-mod docker_image_list;
-mod docker_image_pull;
 mod docker_container_list;
 mod docker_engine_version;
+mod docker_image_list;
+mod docker_image_pull;
 
-use serde::{Deserialize};
+use serde::Deserialize;
 
 use crate::errors::CommandError;
-
 
 #[derive(Clone, Deserialize, Debug)]
 #[serde(tag = "id")]
 pub enum Command {
-    DockerImagePull{command: docker_image_pull::DockerImagePull},
-    DockerImageList{command: docker_image_list::DockerImageList},
-    DockerContainerList{command: docker_container_list::DockerContainerList},
-    DockerEngineVersion{command: docker_engine_version::DockerEngineVersion},
+    DockerImagePull {
+        command: docker_image_pull::DockerImagePull,
+    },
+    DockerImageList {
+        command: docker_image_list::DockerImageList,
+    },
+    DockerContainerList {
+        command: docker_container_list::DockerContainerList,
+    },
+    DockerEngineVersion {
+        command: docker_engine_version::DockerEngineVersion,
+    },
 }
 
 pub async fn execute_command(command_container: &Command) -> Result<(), CommandError> {
     match command_container {
-        Command::DockerImagePull{command} => Ok(command.execute().await?),
-        Command::DockerImageList{command} => Ok(command.execute().await?),
-        Command::DockerContainerList{command} => Ok(command.execute().await?),
-        Command::DockerEngineVersion{command} => Ok(command.execute().await?),
+        Command::DockerImagePull { command } => Ok(command.execute().await?),
+        Command::DockerImageList { command } => Ok(command.execute().await?),
+        Command::DockerContainerList { command } => Ok(command.execute().await?),
+        Command::DockerEngineVersion { command } => Ok(command.execute().await?),
     }
 }
 
 pub async fn revert_command(command_container: &Command) -> Result<(), CommandError> {
     match command_container {
-        Command::DockerImagePull{command} => Ok(command.revert().await?),
-        Command::DockerImageList{command} => Ok(command.revert().await?),
-        Command::DockerContainerList{command} => Ok(command.revert().await?),
-        Command::DockerEngineVersion{command} => Ok(command.revert().await?),
+        Command::DockerImagePull { command } => Ok(command.revert().await?),
+        Command::DockerImageList { command } => Ok(command.revert().await?),
+        Command::DockerContainerList { command } => Ok(command.revert().await?),
+        Command::DockerEngineVersion { command } => Ok(command.revert().await?),
     }
 }

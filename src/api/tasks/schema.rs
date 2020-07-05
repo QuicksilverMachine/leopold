@@ -1,5 +1,4 @@
-use serde::{Deserialize};
-
+use serde::Deserialize;
 
 #[derive(Deserialize)]
 pub struct TaskExecuteRequest {

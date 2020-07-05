@@ -23,32 +23,32 @@ pub async fn run_task(app: String, task_id: String) {
 
     // Check if requested task exists for selected app
     if !&configuration.tasks.contains_key(&task_id) {
-        eprintln!("* Task not found: \"{}\" for app \"{}\".", task_id, app);
+        eprintln!("> Task not found: \"{}\" for app \"{}\".", task_id, app);
         return;
     }
 
-    println!("* Executing task: \"{}\"", task_id);
+    println!("> Executing task: \"{}\"", task_id);
     match run_task_commands(&configuration.tasks[&task_id]).await {
         Err(error) => {
             if error.completed_tasks.is_empty() {
-                eprintln!("* Task failed: \"{}\".", task_id);
+                eprintln!("> Task failed: \"{}\".", task_id);
             } else {
-                eprintln!("* Task failed: \"{}\", attempting revert.", task_id);
+                eprintln!("> Task failed: \"{}\", attempting revert.", task_id);
             }
             match revert_task_commands(&error.completed_tasks).await {
                 Err(error) => {
                     eprintln!(
-                        "* Task revert failed for \"{}\" due to error: {}.",
+                        "> Task revert failed for \"{}\" due to error: {}.",
                         task_id, error.message
                     );
                 }
                 _ => {
-                    println!("* Task reverted: \"{}\"", task_id);
+                    println!("> Task reverted: \"{}\"", task_id);
                 }
             };
         }
         _ => {
-            println!("* Task completed: \"{}\"", task_id);
+            println!("> Task completed: \"{}\"", task_id);
         }
     };
 }

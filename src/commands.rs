@@ -3,11 +3,13 @@ mod docker_engine_version;
 mod docker_image_list;
 mod docker_image_pull;
 
+use std::fmt::{Debug, Formatter};
+
 use serde::Deserialize;
 
 use crate::errors::CommandError;
 
-#[derive(Clone, Deserialize, Debug)]
+#[derive(Clone, Deserialize)]
 #[serde(tag = "id")]
 pub enum Command {
     DockerImagePull {
@@ -39,5 +41,20 @@ pub async fn revert_command(command_container: &Command) -> Result<(), CommandEr
         Command::DockerImageList { command } => Ok(command.revert().await?),
         Command::DockerContainerList { command } => Ok(command.revert().await?),
         Command::DockerEngineVersion { command } => Ok(command.revert().await?),
+    }
+}
+
+impl Debug for Command {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+        match &self {
+            Command::DockerImagePull { command: _ } => f.debug_struct("DockerImagePull").finish(),
+            Command::DockerImageList { command: _ } => f.debug_struct("DockerImageList").finish(),
+            Command::DockerContainerList { command: _ } => {
+                f.debug_struct("DockerContainerList").finish()
+            }
+            Command::DockerEngineVersion { command: _ } => {
+                f.debug_struct("DockerEngineVersion").finish()
+            }
+        }
     }
 }

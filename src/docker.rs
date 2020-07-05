@@ -44,7 +44,7 @@ impl From<APIImages> for Image {
             tags
                 .first()
                 .unwrap_or(&default_tag)
-                .split(":")
+                .split(':')
                 .collect::<Vec<_>>()
         };
         Image{
@@ -66,7 +66,7 @@ impl From<bollard::image::Image> for Image {
             tags
                 .first()
                 .unwrap_or(&default_tag)
-                .split(":")
+                .split(':')
                 .collect::<Vec<_>>()
         };
         Image{

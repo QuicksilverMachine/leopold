@@ -27,7 +27,9 @@ pub async fn execute_task(app: String, task_id: String) {
                 Err(error) => {
                     eprintln!("Failed to revert task \"{}\" due to error: {}.", task_id, error.message);
                 },
-                _ => {},
+                _ => {
+                    println!("Task reverted: \"{}\"", task_id);
+                }
             };
         },
         _ => {
@@ -36,7 +38,7 @@ pub async fn execute_task(app: String, task_id: String) {
     };
 }
 
-async fn execute_task_commands(commands: &Vec<Command>) -> Result<(), TaskError> {
+async fn execute_task_commands(commands: &[Command]) -> Result<(), TaskError> {
     let mut completed: Vec<Command> = Vec::new();
     for command in commands {
         match execute_command(command).await {
@@ -54,8 +56,8 @@ async fn execute_task_commands(commands: &Vec<Command>) -> Result<(), TaskError>
     Ok(())
 }
 
-async fn revert_task_commands(commands: &Vec<Command>) -> Result<(), TaskError> {
-    for command in commands.clone().iter().rev() {
+async fn revert_task_commands(commands: &[Command]) -> Result<(), TaskError> {
+    for command in commands.iter().rev() {
         match revert_command(command).await {
             Err(error) => Err(
                 TaskError{message: error.message, completed_tasks: Vec::new()}

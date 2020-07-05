@@ -1,19 +1,19 @@
 use futures::FutureExt;
 
-use crate::commands::{execute_command, revert_command, Command};
+use crate::commands::{revert_command, run_command, Command};
 use crate::configuration::parse_configuration;
 use crate::errors::TaskError;
 
-pub async fn execute(app: &str, task_id: &str) {
-    let future = { execute_task(app.to_string(), task_id.to_string()).boxed_local() };
+pub async fn run(app: &str, task_id: &str) {
+    let future = { run_task(app.to_string(), task_id.to_string()).boxed_local() };
     actix::Arbiter::spawn(future);
 }
 
-pub async fn execute_task(app: String, task_id: String) {
+pub async fn run_task(app: String, task_id: String) {
     let configuration = parse_configuration(&app).await;
     println!("Executing task: {}", task_id);
 
-    match execute_task_commands(&configuration.tasks[&task_id]).await {
+    match run_task_commands(&configuration.tasks[&task_id]).await {
         Err(error) => {
             if error.completed_tasks.is_empty() {
                 eprintln!("Task failed: \"{}\".", task_id);
@@ -38,10 +38,10 @@ pub async fn execute_task(app: String, task_id: String) {
     };
 }
 
-async fn execute_task_commands(commands: &[Command]) -> Result<(), TaskError> {
+async fn run_task_commands(commands: &[Command]) -> Result<(), TaskError> {
     let mut completed: Vec<Command> = Vec::new();
     for command in commands {
-        match execute_command(command).await {
+        match run_command(command).await {
             Err(error) => {
                 eprintln!("Command failed: \"{:?}\".", command);
                 Err(TaskError {

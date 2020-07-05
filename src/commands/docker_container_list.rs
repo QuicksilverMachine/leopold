@@ -8,7 +8,7 @@ pub struct DockerContainerList {
 }
 
 impl DockerContainerList {
-    pub async fn execute(&self) -> Result<(), CommandError> {
+    pub async fn run(&self) -> Result<(), CommandError> {
         let container_list = docker::container_list().await;
         match container_list {
             Err(error) => Err(CommandError {

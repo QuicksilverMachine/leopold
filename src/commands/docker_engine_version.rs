@@ -8,7 +8,7 @@ pub struct DockerEngineVersion {
 }
 
 impl DockerEngineVersion {
-    pub async fn execute(&self) -> Result<(), CommandError> {
+    pub async fn run(&self) -> Result<(), CommandError> {
         match docker::version().await {
             Err(error) => Err(CommandError {
                 message: error.message,

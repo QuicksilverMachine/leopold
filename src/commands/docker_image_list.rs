@@ -8,7 +8,7 @@ pub struct DockerImageList {
 }
 
 impl DockerImageList {
-    pub async fn execute(&self) -> Result<(), CommandError> {
+    pub async fn run(&self) -> Result<(), CommandError> {
         let images = docker::image_list().await;
         match images {
             Err(error) => Err(CommandError {

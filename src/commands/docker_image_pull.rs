@@ -14,7 +14,7 @@ impl DockerImagePull {
         format!("{}:{}", self.name, &self.version)
     }
 
-    pub async fn execute(&self) -> Result<(), CommandError> {
+    pub async fn run(&self) -> Result<(), CommandError> {
         match docker::image_pull(&self.image()).await {
             Err(error) => Err(CommandError {
                 message: error.message,

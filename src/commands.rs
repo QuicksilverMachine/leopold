@@ -24,12 +24,12 @@ pub enum Command {
     },
 }
 
-pub async fn execute_command(command_container: &Command) -> Result<(), CommandError> {
+pub async fn run_command(command_container: &Command) -> Result<(), CommandError> {
     match command_container {
-        Command::DockerImagePull { command } => Ok(command.execute().await?),
-        Command::DockerImageList { command } => Ok(command.execute().await?),
-        Command::DockerContainerList { command } => Ok(command.execute().await?),
-        Command::DockerEngineVersion { command } => Ok(command.execute().await?),
+        Command::DockerImagePull { command } => Ok(command.run().await?),
+        Command::DockerImageList { command } => Ok(command.run().await?),
+        Command::DockerContainerList { command } => Ok(command.run().await?),
+        Command::DockerEngineVersion { command } => Ok(command.run().await?),
     }
 }
 

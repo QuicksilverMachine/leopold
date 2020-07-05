@@ -1,11 +1,11 @@
-use actix_web::{web, HttpResponse, Responder};
-
-use serde_json::json;
+use actix_web::{web, Responder};
 
 use super::schema;
 use crate::tasks;
 
-pub async fn execute(request: web::Json<schema::TaskExecuteRequest>) -> impl Responder {
-    tasks::execute(&request.app, &request.task_id).await;
-    HttpResponse::Ok().json(json!({"message": "OK"}))
+pub async fn run(request: web::Json<schema::TaskRunRequest>) -> impl Responder {
+    tasks::run(&request.app, &request.task_id).await;
+    web::Json(schema::TaskRunResponse {
+        message: "OK".to_string(),
+    })
 }

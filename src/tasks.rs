@@ -1,7 +1,7 @@
 use futures::FutureExt;
 
 use crate::commands::{revert_command, run_command, Command};
-use crate::configuration::app_configuration;
+use crate::configuration;
 use crate::errors::TaskError;
 
 pub async fn run(app: &str, task_id: &str) {
@@ -10,7 +10,7 @@ pub async fn run(app: &str, task_id: &str) {
 }
 
 pub async fn run_task(app: String, task_id: String) {
-    let configuration = match app_configuration(&app).await {
+    let configuration = match configuration::read(&app).await {
         Ok(configuration) => configuration,
         Err(error) => {
             eprintln!(

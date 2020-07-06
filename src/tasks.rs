@@ -56,10 +56,10 @@ pub async fn run_task(app: String, task_id: String) {
 async fn run_task_commands(commands: &[Command]) -> Result<(), TaskError> {
     let mut completed: Vec<Command> = Vec::new();
     for command in commands {
-        println!("- Running command: \"{:?}\"", command);
+        println!("- Running command: \"{}\"", command.to_string());
         match run_command(command).await {
             Err(error) => {
-                eprintln!("- Command failed: \"{:?}\".", command);
+                eprintln!("- Command failed: \"{}\".", command.to_string());
                 Err(TaskError {
                     message: error.message,
                     completed_tasks: completed.clone(),
@@ -67,7 +67,7 @@ async fn run_task_commands(commands: &[Command]) -> Result<(), TaskError> {
             }
             Ok(_) => {
                 completed.push(command.clone());
-                println!("- Command completed: \"{:?}\".", command);
+                println!("- Command completed: \"{}\".", command.to_string());
                 Ok(())
             }
         }?;

@@ -3,11 +3,11 @@ use crate::errors::CommandError;
 use serde::Deserialize;
 
 #[derive(Clone, Deserialize, Debug)]
-pub struct DockerEngineVersion {
+pub struct DockerVersion {
     description: String,
 }
 
-impl DockerEngineVersion {
+impl DockerVersion {
     pub async fn run(&self) -> Result<(), CommandError> {
         match docker::version().await {
             Err(error) => Err(CommandError {

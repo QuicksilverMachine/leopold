@@ -1,7 +1,7 @@
 mod docker_container_list;
-mod docker_engine_version;
 mod docker_image_list;
 mod docker_image_pull;
+mod docker_version;
 
 use std::fmt::{Debug, Display, Formatter};
 
@@ -21,8 +21,8 @@ pub enum Command {
     DockerContainerList {
         command: docker_container_list::DockerContainerList,
     },
-    DockerEngineVersion {
-        command: docker_engine_version::DockerEngineVersion,
+    DockerVersion {
+        command: docker_version::DockerVersion,
     },
 }
 
@@ -32,7 +32,7 @@ impl Display for Command {
             Command::DockerImagePull { command: _ } => write!(f, "DockerImagePull"),
             Command::DockerImageList { command: _ } => write!(f, "DockerImageList"),
             Command::DockerContainerList { command: _ } => write!(f, "DockerContainerList"),
-            Command::DockerEngineVersion { command: _ } => write!(f, "DockerEngineVersion"),
+            Command::DockerVersion { command: _ } => write!(f, "DockerVersion"),
         }
     }
 }
@@ -42,7 +42,7 @@ pub async fn run_command(command_container: &Command) -> Result<(), CommandError
         Command::DockerImagePull { command } => Ok(command.run().await?),
         Command::DockerImageList { command } => Ok(command.run().await?),
         Command::DockerContainerList { command } => Ok(command.run().await?),
-        Command::DockerEngineVersion { command } => Ok(command.run().await?),
+        Command::DockerVersion { command } => Ok(command.run().await?),
     }
 }
 
@@ -51,6 +51,6 @@ pub async fn revert_command(command_container: &Command) -> Result<(), CommandEr
         Command::DockerImagePull { command } => Ok(command.revert().await?),
         Command::DockerImageList { command } => Ok(command.revert().await?),
         Command::DockerContainerList { command } => Ok(command.revert().await?),
-        Command::DockerEngineVersion { command } => Ok(command.revert().await?),
+        Command::DockerVersion { command } => Ok(command.revert().await?),
     }
 }

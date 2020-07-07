@@ -11,7 +11,7 @@ tasks:
       command:
         description: List docker images
   docker_version:
-    - id: DockerEngineVersion
+    - id: DockerVersion
       command:
         description: Display docker engine version
   test:

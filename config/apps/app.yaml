@@ -1,6 +1,10 @@
 # App configuration example
 
 tasks:
+  list_containers:
+    - id: DockerContainerList
+      command:
+        description: List docker containers
   install:
     - id: DockerImagePull
       command:
@@ -14,6 +18,23 @@ tasks:
     - id: DockerVersion
       command:
         description: Display docker engine version
+  create_container:
+    - id: DockerContainerCreate
+      command:
+        description: New container
+        image: "nginx:latest"
+        name: container_name
+        mounts: []
+        ports:
+          - host: "127.0.0.1"
+            internal_port: "80/tcp"
+            external_ports:
+              - "8000/tcp"
+  remove_container:
+    - id: DockerContainerRemove
+      command:
+        description: Remove container
+        name: container_name
   test:
     - docker_version
     - install

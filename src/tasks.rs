@@ -1,12 +1,12 @@
-use futures::FutureExt;
+use tokio;
 
 use crate::commands::{revert_command, run_command, Command};
 use crate::configuration;
 use crate::errors::TaskError;
 
 pub async fn run(app: &str, task_id: &str) {
-    let future = { run_task(app.to_string(), task_id.to_string()).boxed_local() };
-    actix::Arbiter::spawn(future);
+    let future = run_task(app.to_string(), task_id.to_string());
+    tokio::spawn(future);
 }
 
 pub async fn run_task(app: String, task_id: String) {

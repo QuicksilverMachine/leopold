@@ -5,9 +5,8 @@ authors = ["quicksilver.machine@gmail.com"]
 edition = "2018"
 
 [dependencies]
-actix = "0.9.0"
-actix-web = "2.0"
 actix-rt = "1.0"
+actix-web = "2.0"
 bollard = "0.7.1"
 chrono = { version = "0.4", features = ["serde"] }
 env_logger = "0.7.1"

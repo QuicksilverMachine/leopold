@@ -5,6 +5,7 @@ use crate::errors::CommandError;
 
 #[derive(Clone, Deserialize, Debug)]
 pub struct DockerContainerCreate {
+    description: Option<String>,
     image: String,
     name: String,
     mounts: Vec<String>,

@@ -5,6 +5,7 @@ use crate::errors::CommandError;
 
 #[derive(Clone, Deserialize, Debug)]
 pub struct DockerContainerRemove {
+    description: Option<String>,
     name: String,
     force: Option<bool>,
 }

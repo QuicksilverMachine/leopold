@@ -5,7 +5,7 @@ use crate::errors::CommandError;
 
 #[derive(Clone, Deserialize, Debug)]
 pub struct DockerImageList {
-    description: String,
+    description: Option<String>,
 }
 
 impl DockerImageList {

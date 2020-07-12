@@ -28,14 +28,14 @@ pub async fn run_task(app: String, task_id: String) {
     }
 
     info!("Executing task: \"{}\"", task_id);
-    match run_task_commands(&configuration.tasks[&task_id]).await {
+    match run_commands(&configuration.tasks[&task_id]).await {
         Err(error) => {
             if error.completed_tasks.is_empty() {
                 error!("Task failed: \"{}\".", task_id);
             } else {
                 error!("Task failed: \"{}\", attempting revert.", task_id);
             }
-            match revert_task_commands(&error.completed_tasks).await {
+            match revert_commands(&error.completed_tasks).await {
                 Err(error) => {
                     error!(
                         "Task revert failed for \"{}\" due to error: {}.",
@@ -53,7 +53,7 @@ pub async fn run_task(app: String, task_id: String) {
     };
 }
 
-async fn run_task_commands(commands: &[Command]) -> Result<(), TaskError> {
+async fn run_commands(commands: &[Command]) -> Result<(), TaskError> {
     let mut completed: Vec<Command> = Vec::new();
     for command in commands {
         info!("Running command: \"{}\"", command.to_string());
@@ -75,7 +75,7 @@ async fn run_task_commands(commands: &[Command]) -> Result<(), TaskError> {
     Ok(())
 }
 
-async fn revert_task_commands(commands: &[Command]) -> Result<(), TaskError> {
+async fn revert_commands(commands: &[Command]) -> Result<(), TaskError> {
     for command in commands.iter().rev() {
         match revert_command(command).await {
             Err(error) => Err(TaskError {

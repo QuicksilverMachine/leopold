@@ -7,6 +7,7 @@ mod docker_container_stop;
 mod docker_image_list;
 mod docker_image_pull;
 mod docker_version;
+mod sleep;
 
 use std::fmt::{Debug, Display, Formatter};
 
@@ -44,6 +45,9 @@ pub enum Command {
     DockerVersion {
         command: docker_version::DockerVersion,
     },
+    Sleep {
+        command: sleep::Sleep,
+    },
 }
 
 impl Display for Command {
@@ -58,6 +62,7 @@ impl Display for Command {
             Command::DockerContainerStop { command: _ } => write!(f, "DockerContainerStop"),
             Command::DockerContainerRestart { command: _ } => write!(f, "DockerContainerRestart"),
             Command::DockerVersion { command: _ } => write!(f, "DockerVersion"),
+            Command::Sleep { command: _ } => write!(f, "Sleep"),
         }
     }
 }
@@ -73,6 +78,7 @@ pub async fn run_command(command_container: &Command) -> Result<(), CommandError
         Command::DockerContainerStop { command } => Ok(command.run().await?),
         Command::DockerContainerRestart { command } => Ok(command.run().await?),
         Command::DockerVersion { command } => Ok(command.run().await?),
+        Command::Sleep { command } => Ok(command.run().await?),
     }
 }
 
@@ -87,5 +93,6 @@ pub async fn revert_command(command_container: &Command) -> Result<(), CommandEr
         Command::DockerContainerStop { command } => Ok(command.revert().await?),
         Command::DockerContainerRestart { command } => Ok(command.revert().await?),
         Command::DockerVersion { command } => Ok(command.revert().await?),
+        Command::Sleep { command } => Ok(command.revert().await?),
     }
 }

@@ -50,3 +50,8 @@ tasks:
   test_inheritance:
     - list_containers
     - docker_version
+  sleep:
+    - id: Sleep
+      command:
+        description: Sleep for specified number of seconds
+        duration: 5

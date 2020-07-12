@@ -10,15 +10,9 @@ pub struct DockerVersion {
 
 impl DockerVersion {
     pub async fn run(&self) -> Result<(), CommandError> {
-        match docker::commands::version().await {
-            Err(error) => Err(CommandError {
-                message: error.message,
-            }),
-            Ok(version) => {
-                println!("\tDocker engine version: {}", version);
-                Ok(())
-            }
-        }
+        let version = docker::commands::version().await?;
+        println!("\tDocker engine version: {}", version);
+        Ok(())
     }
 
     pub async fn revert(&self) -> Result<(), CommandError> {

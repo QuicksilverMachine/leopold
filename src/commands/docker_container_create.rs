@@ -8,39 +8,26 @@ pub struct DockerContainerCreate {
     description: Option<String>,
     image: String,
     name: String,
-    mounts: Vec<String>,
-    ports: Vec<docker::models::DockerContainerPortBinding>,
+    mounts: Option<Vec<String>>,
+    ports: Option<Vec<docker::models::DockerContainerPortBinding>>,
 }
 
 impl DockerContainerCreate {
     pub async fn run(&self) -> Result<(), CommandError> {
-        match docker::commands::container_create(
+        docker::commands::container_create(
             &self.image,
             &self.name,
-            self.mounts.clone(),
-            self.ports.clone(),
+            self.mounts.as_ref().unwrap_or(&vec![]).clone(),
+            self.ports.as_ref().unwrap_or(&vec![]).clone(),
         )
-        .await
-        {
-            Err(error) => Err(CommandError {
-                message: error.message,
-            }),
-            Ok(_) => {
-                println!("\tContainer \"{}\" created.", &self.name);
-                Ok(())
-            }
-        }
+        .await?;
+        println!("\tContainer \"{}\" created.", &self.name);
+        Ok(())
     }
 
     pub async fn revert(&self) -> Result<(), CommandError> {
-        match docker::commands::container_remove(&self.name, true).await {
-            Err(error) => Err(CommandError {
-                message: error.message,
-            }),
-            Ok(_) => {
-                println!("\tContainer \"{}\" removed.", &self.name);
-                Ok(())
-            }
-        }
+        docker::commands::container_remove(&self.name, true).await?;
+        println!("\tContainer \"{}\" removed.", &self.name);
+        Ok(())
     }
 }

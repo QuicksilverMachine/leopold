@@ -1,6 +1,9 @@
 mod docker_container_create;
 mod docker_container_list;
 mod docker_container_remove;
+mod docker_container_restart;
+mod docker_container_start;
+mod docker_container_stop;
 mod docker_image_list;
 mod docker_image_pull;
 mod docker_version;
@@ -29,6 +32,15 @@ pub enum Command {
     DockerContainerRemove {
         command: docker_container_remove::DockerContainerRemove,
     },
+    DockerContainerStart {
+        command: docker_container_start::DockerContainerStart,
+    },
+    DockerContainerStop {
+        command: docker_container_stop::DockerContainerStop,
+    },
+    DockerContainerRestart {
+        command: docker_container_restart::DockerContainerRestart,
+    },
     DockerVersion {
         command: docker_version::DockerVersion,
     },
@@ -42,6 +54,9 @@ impl Display for Command {
             Command::DockerContainerList { command: _ } => write!(f, "DockerContainerList"),
             Command::DockerContainerCreate { command: _ } => write!(f, "DockerContainerCreate"),
             Command::DockerContainerRemove { command: _ } => write!(f, "DockerContainerRemove"),
+            Command::DockerContainerStart { command: _ } => write!(f, "DockerContainerStart"),
+            Command::DockerContainerStop { command: _ } => write!(f, "DockerContainerStop"),
+            Command::DockerContainerRestart { command: _ } => write!(f, "DockerContainerRestart"),
             Command::DockerVersion { command: _ } => write!(f, "DockerVersion"),
         }
     }
@@ -54,6 +69,9 @@ pub async fn run_command(command_container: &Command) -> Result<(), CommandError
         Command::DockerContainerList { command } => Ok(command.run().await?),
         Command::DockerContainerCreate { command } => Ok(command.run().await?),
         Command::DockerContainerRemove { command } => Ok(command.run().await?),
+        Command::DockerContainerStart { command } => Ok(command.run().await?),
+        Command::DockerContainerStop { command } => Ok(command.run().await?),
+        Command::DockerContainerRestart { command } => Ok(command.run().await?),
         Command::DockerVersion { command } => Ok(command.run().await?),
     }
 }
@@ -65,6 +83,9 @@ pub async fn revert_command(command_container: &Command) -> Result<(), CommandEr
         Command::DockerContainerList { command } => Ok(command.revert().await?),
         Command::DockerContainerCreate { command } => Ok(command.revert().await?),
         Command::DockerContainerRemove { command } => Ok(command.revert().await?),
+        Command::DockerContainerStart { command } => Ok(command.revert().await?),
+        Command::DockerContainerStop { command } => Ok(command.revert().await?),
+        Command::DockerContainerRestart { command } => Ok(command.revert().await?),
         Command::DockerVersion { command } => Ok(command.revert().await?),
     }
 }

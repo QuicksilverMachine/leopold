@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use bollard::container::{
     Config, CreateContainerOptions, InspectContainerOptions, ListContainersOptions,
-    RemoveContainerOptions,
+    RemoveContainerOptions, RestartContainerOptions, StartContainerOptions, StopContainerOptions,
 };
 use bollard::image::{CreateImageOptions, ListImagesOptions, RemoveImageOptions};
 use bollard::models::HostConfig;
@@ -11,6 +11,13 @@ use futures::StreamExt;
 
 use super::models::{APIDockerContainerPortBinding, Container, DockerContainerPortBinding, Image};
 use crate::errors::DockerError;
+
+/// Return docker engine version
+pub async fn version() -> Result<String, DockerError> {
+    let docker = docker_connection().await?;
+    let version = docker.version().await?.version;
+    Ok(version)
+}
 
 /// Generate a docker daemon connection
 async fn docker_connection() -> Result<Docker, DockerError> {
@@ -147,9 +154,34 @@ pub async fn container_remove(name: &str, force: bool) -> Result<(), DockerError
     Ok(())
 }
 
-/// Return docker engine version
-pub async fn version() -> Result<String, DockerError> {
+/// Starts docker container
+pub async fn container_start(name: &str) -> Result<(), DockerError> {
     let docker = docker_connection().await?;
-    let version = docker.version().await?.version;
-    Ok(version)
+    docker
+        .start_container(&name, None::<StartContainerOptions<String>>)
+        .await?;
+    Ok(())
+}
+
+/// Stops docker container
+pub async fn container_stop(name: &str, timeout: i64) -> Result<(), DockerError> {
+    let docker = docker_connection().await?;
+    docker
+        .stop_container(&name, Some(StopContainerOptions { t: timeout }))
+        .await?;
+    Ok(())
+}
+
+/// Restarts docker container
+pub async fn container_restart(name: &str, timeout: i64) -> Result<(), DockerError> {
+    let docker = docker_connection().await?;
+    docker
+        .restart_container(
+            &name,
+            Some(RestartContainerOptions {
+                t: timeout as isize,
+            }),
+        )
+        .await?;
+    Ok(())
 }

@@ -41,3 +41,11 @@ impl From<bollard::errors::Error> for DockerError {
         }
     }
 }
+
+impl From<DockerError> for CommandError {
+    fn from(error: DockerError) -> Self {
+        CommandError {
+            message: error.message,
+        }
+    }
+}

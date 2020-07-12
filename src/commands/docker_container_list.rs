@@ -10,18 +10,11 @@ pub struct DockerContainerList {
 
 impl DockerContainerList {
     pub async fn run(&self) -> Result<(), CommandError> {
-        let container_list = docker::commands::container_list().await;
-        match container_list {
-            Err(error) => Err(CommandError {
-                message: error.message,
-            }),
-            Ok(containers) => {
-                for container in containers {
-                    println!("\t{}", container.name)
-                }
-                Ok(())
-            }
+        let containers = docker::commands::container_list().await?;
+        for container in containers {
+            println!("\t{}", container.name)
         }
+        Ok(())
     }
 
     pub async fn revert(&self) -> Result<(), CommandError> {

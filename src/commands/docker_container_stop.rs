@@ -4,16 +4,18 @@ use crate::docker;
 use crate::errors::CommandError;
 
 #[derive(Clone, Deserialize, Debug)]
-pub struct DockerContainerRemove {
+pub struct DockerContainerStop {
     description: Option<String>,
     name: String,
-    force: Option<bool>,
+    timeout: Option<i64>,
 }
 
-impl DockerContainerRemove {
+static DEFAULT_TIMEOUT: i64 = 10;
+
+impl DockerContainerStop {
     pub async fn run(&self) -> Result<(), CommandError> {
-        docker::commands::container_remove(&self.name, self.force.unwrap_or(true)).await?;
-        println!("\tContainer \"{}\" removed.", &self.name);
+        docker::commands::container_stop(&self.name, self.timeout.unwrap_or(DEFAULT_TIMEOUT))
+            .await?;
         Ok(())
     }
 

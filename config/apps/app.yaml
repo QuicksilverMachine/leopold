@@ -29,12 +29,24 @@ tasks:
           - host: "127.0.0.1"
             internal_port: "80/tcp"
             external_ports:
-              - "8000/tcp"
+              - "0/tcp"
   remove_container:
     - id: DockerContainerRemove
       command:
         description: Remove container
         name: container_name
-  test:
+  start_container:
+    - id: DockerContainerStart
+      command:
+        name: container_name
+  stop_container:
+    - id: DockerContainerStop
+      command:
+        name: container_name
+  restart_container:
+    - id: DockerContainerRestart
+      command:
+        name: container_name
+  test_inheritance:
+    - list_containers
     - docker_version
-    - install

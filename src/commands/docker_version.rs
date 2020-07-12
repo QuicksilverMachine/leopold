@@ -1,6 +1,7 @@
+use serde::Deserialize;
+
 use crate::docker;
 use crate::errors::CommandError;
-use serde::Deserialize;
 
 #[derive(Clone, Deserialize, Debug)]
 pub struct DockerVersion {
@@ -9,7 +10,7 @@ pub struct DockerVersion {
 
 impl DockerVersion {
     pub async fn run(&self) -> Result<(), CommandError> {
-        match docker::version().await {
+        match docker::commands::version().await {
             Err(error) => Err(CommandError {
                 message: error.message,
             }),

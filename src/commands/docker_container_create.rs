@@ -1,18 +1,19 @@
+use serde::Deserialize;
+
 use crate::docker;
 use crate::errors::CommandError;
-use serde::Deserialize;
 
 #[derive(Clone, Deserialize, Debug)]
 pub struct DockerContainerCreate {
     image: String,
     name: String,
     mounts: Vec<String>,
-    ports: Vec<docker::DockerContainerPortBinding>,
+    ports: Vec<docker::models::DockerContainerPortBinding>,
 }
 
 impl DockerContainerCreate {
     pub async fn run(&self) -> Result<(), CommandError> {
-        match docker::container_create(
+        match docker::commands::container_create(
             &self.image,
             &self.name,
             self.mounts.clone(),
@@ -31,7 +32,7 @@ impl DockerContainerCreate {
     }
 
     pub async fn revert(&self) -> Result<(), CommandError> {
-        match docker::container_remove(&self.name, true).await {
+        match docker::commands::container_remove(&self.name, true).await {
             Err(error) => Err(CommandError {
                 message: error.message,
             }),

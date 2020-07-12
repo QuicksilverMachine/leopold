@@ -1,6 +1,7 @@
+use serde::Deserialize;
+
 use crate::docker;
 use crate::errors::CommandError;
-use serde::Deserialize;
 
 #[derive(Clone, Deserialize, Debug)]
 pub struct DockerImageList {
@@ -9,7 +10,7 @@ pub struct DockerImageList {
 
 impl DockerImageList {
     pub async fn run(&self) -> Result<(), CommandError> {
-        let images = docker::image_list().await;
+        let images = docker::commands::image_list().await;
         match images {
             Err(error) => Err(CommandError {
                 message: error.message,

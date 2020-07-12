@@ -1,6 +1,7 @@
+use serde::Deserialize;
+
 use crate::docker;
 use crate::errors::CommandError;
-use serde::Deserialize;
 
 #[derive(Clone, Deserialize, Debug)]
 pub struct DockerImagePull {
@@ -15,7 +16,7 @@ impl DockerImagePull {
     }
 
     pub async fn run(&self) -> Result<(), CommandError> {
-        match docker::image_pull(&self.image()).await {
+        match docker::commands::image_pull(&self.image()).await {
             Err(error) => Err(CommandError {
                 message: error.message,
             }),
@@ -27,7 +28,7 @@ impl DockerImagePull {
     }
 
     pub async fn revert(&self) -> Result<(), CommandError> {
-        match docker::image_remove(&self.image(), true).await {
+        match docker::commands::image_remove(&self.image(), true).await {
             Err(error) => Err(CommandError {
                 message: error.message,
             }),

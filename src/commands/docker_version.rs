@@ -11,7 +11,7 @@ pub struct DockerVersion {
 impl DockerVersion {
     pub async fn run(&self) -> Result<(), CommandError> {
         let version = docker::commands::version().await?;
-        println!("\tDocker engine version: {}", version);
+        info!("Docker engine version: {}", version);
         Ok(())
     }
 

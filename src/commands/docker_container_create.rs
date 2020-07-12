@@ -21,13 +21,13 @@ impl DockerContainerCreate {
             self.ports.as_ref().unwrap_or(&vec![]).clone(),
         )
         .await?;
-        println!("\tContainer \"{}\" created.", &self.name);
+        info!("Container \"{}\" created.", &self.name);
         Ok(())
     }
 
     pub async fn revert(&self) -> Result<(), CommandError> {
         docker::commands::container_remove(&self.name, true).await?;
-        println!("\tContainer \"{}\" removed.", &self.name);
+        info!("Container \"{}\" removed.", &self.name);
         Ok(())
     }
 }

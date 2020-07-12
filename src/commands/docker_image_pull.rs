@@ -17,13 +17,13 @@ impl DockerImagePull {
 
     pub async fn run(&self) -> Result<(), CommandError> {
         docker::commands::image_pull(&self.image()).await?;
-        println!("\tImage \"{}\" pull complete.", self.image());
+        info!("Image \"{}\" pull complete.", self.image());
         Ok(())
     }
 
     pub async fn revert(&self) -> Result<(), CommandError> {
         docker::commands::image_remove(&self.image(), true).await?;
-        println!("\tImage \"{}\" removed.", self.image());
+        info!("Image \"{}\" removed.", self.image());
         Ok(())
     }
 }

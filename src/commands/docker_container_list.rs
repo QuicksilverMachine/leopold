@@ -12,7 +12,7 @@ impl DockerContainerList {
     pub async fn run(&self) -> Result<(), CommandError> {
         let containers = docker::commands::container_list().await?;
         for container in containers {
-            println!("\t{}", container.name)
+            info!("{}", container.name)
         }
         Ok(())
     }

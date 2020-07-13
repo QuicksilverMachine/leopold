@@ -4,12 +4,12 @@ use crate::commands::{revert_command, run_command, Command};
 use crate::configuration;
 use crate::errors::TaskError;
 
-pub async fn run(app: &str, task_id: &str) {
-    let future = run_task(app.to_string(), task_id.to_string());
+pub async fn run(app: &str, task_key: &str) {
+    let future = run_task(app.to_string(), task_key.to_string());
     tokio::spawn(future);
 }
 
-pub async fn run_task(app: String, task_id: String) {
+pub async fn run_task(app: String, task_key: String) {
     let configuration = match configuration::read(&app).await {
         Ok(configuration) => configuration,
         Err(error) => {
@@ -22,33 +22,33 @@ pub async fn run_task(app: String, task_id: String) {
     };
 
     // Check if requested task exists for selected app
-    if !&configuration.tasks.contains_key(&task_id) {
-        error!("Task not found: \"{}\" for app \"{}\".", task_id, app);
+    if !&configuration.tasks.contains_key(&task_key) {
+        error!("Task not found: \"{}\" for app \"{}\".", task_key, app);
         return;
     }
 
-    info!("Executing task: \"{}\"", task_id);
-    match run_commands(&configuration.tasks[&task_id]).await {
+    info!("Executing task: \"{}\"", task_key);
+    match run_commands(&configuration.tasks[&task_key]).await {
         Err(error) => {
             if error.completed_tasks.is_empty() {
-                error!("Task failed: \"{}\".", task_id);
+                error!("Task failed: \"{}\".", task_key);
             } else {
-                error!("Task failed: \"{}\", attempting revert.", task_id);
+                error!("Task failed: \"{}\", attempting revert.", task_key);
             }
             match revert_commands(&error.completed_tasks).await {
                 Err(error) => {
                     error!(
                         "Task revert failed for \"{}\" due to error: {}.",
-                        task_id, error.message
+                        task_key, error.message
                     );
                 }
                 _ => {
-                    info!("Task reverted: \"{}\"", task_id);
+                    info!("Task reverted: \"{}\"", task_key);
                 }
             };
         }
         _ => {
-            info!("Task completed: \"{}\"", task_id);
+            info!("Task completed: \"{}\"", task_key);
         }
     };
 }

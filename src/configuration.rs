@@ -42,14 +42,15 @@ async fn preprocess_commands(
     };
 
     // Manage Task inheritance
-    for (task_id, commands) in &app_config.tasks {
+    for (task_key, commands) in &app_config.tasks {
         for command in commands {
             if !command.is_string() {
                 // Normal commands, convert and assign
-                let command_values = app_config.tasks[task_id].clone();
-                processed_app_config
-                    .tasks
-                    .insert(task_id.to_string(), convert_commands(command_values).await?);
+                let command_values = app_config.tasks[task_key].clone();
+                processed_app_config.tasks.insert(
+                    task_key.to_string(),
+                    convert_commands(command_values).await?,
+                );
             } else {
                 // Task found, replace with associated commands
                 let replaceable_task = command.as_str().unwrap_or_default();
@@ -57,16 +58,16 @@ async fn preprocess_commands(
                     let command_values = app_config.tasks[replaceable_task].clone();
 
                     let converted = convert_commands(command_values).await?;
-                    if !processed_app_config.tasks.contains_key(task_id) {
+                    if !processed_app_config.tasks.contains_key(task_key) {
                         // First command to be added
                         processed_app_config
                             .tasks
-                            .insert(task_id.to_string(), converted);
+                            .insert(task_key.to_string(), converted);
                     } else {
                         // Key exists, add to existing commands
                         processed_app_config
                             .tasks
-                            .get_mut(task_id)
+                            .get_mut(task_key)
                             .unwrap_or(&mut Vec::new())
                             .extend(converted);
                     }

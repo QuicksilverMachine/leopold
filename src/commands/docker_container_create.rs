@@ -1,7 +1,7 @@
 use serde::Deserialize;
 
-use crate::docker;
 use crate::errors::CommandError;
+use crate::{docker, logger};
 
 #[derive(Clone, Deserialize, Debug)]
 pub struct DockerContainerCreate {
@@ -13,7 +13,7 @@ pub struct DockerContainerCreate {
 }
 
 impl DockerContainerCreate {
-    pub async fn run(&self) -> Result<(), CommandError> {
+    pub async fn run(&self, task_id: String) -> Result<(), CommandError> {
         docker::commands::container_create(
             &self.image,
             &self.name,
@@ -21,13 +21,19 @@ impl DockerContainerCreate {
             self.ports.as_ref().unwrap_or(&vec![]).clone(),
         )
         .await?;
-        info!("Container \"{}\" created.", &self.name);
+        logger::task_info(
+            task_id.clone(),
+            format!("Container \"{}\" created", &self.name),
+        );
         Ok(())
     }
 
-    pub async fn revert(&self) -> Result<(), CommandError> {
+    pub async fn revert(&self, task_id: String) -> Result<(), CommandError> {
         docker::commands::container_remove(&self.name, true).await?;
-        info!("Container \"{}\" removed.", &self.name);
+        logger::task_info(
+            task_id.clone(),
+            format!("Container \"{}\" removed", &self.name),
+        );
         Ok(())
     }
 }

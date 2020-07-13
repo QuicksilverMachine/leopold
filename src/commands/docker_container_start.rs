@@ -10,12 +10,12 @@ pub struct DockerContainerStart {
 }
 
 impl DockerContainerStart {
-    pub async fn run(&self) -> Result<(), CommandError> {
+    pub async fn run(&self, _: String) -> Result<(), CommandError> {
         docker::commands::container_start(&self.name).await?;
         Ok(())
     }
 
-    pub async fn revert(&self) -> Result<(), CommandError> {
+    pub async fn revert(&self, _: String) -> Result<(), CommandError> {
         Ok(())
     }
 }

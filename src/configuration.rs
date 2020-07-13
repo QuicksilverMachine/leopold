@@ -75,7 +75,7 @@ async fn preprocess_commands(
                     // Key to replace not found!
                     return Err(Box::new(AppConfigError {
                         message: format!(
-                            "Cannot parse config, task key to replace not found: \"{}\".",
+                            "Cannot parse config, task key to replace not found: \"{}\"",
                             replaceable_task
                         ),
                     }));

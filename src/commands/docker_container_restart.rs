@@ -13,13 +13,13 @@ pub struct DockerContainerRestart {
 static DEFAULT_TIMEOUT: i64 = 10;
 
 impl DockerContainerRestart {
-    pub async fn run(&self) -> Result<(), CommandError> {
+    pub async fn run(&self, _: String) -> Result<(), CommandError> {
         docker::commands::container_restart(&self.name, self.timeout.unwrap_or(DEFAULT_TIMEOUT))
             .await?;
         Ok(())
     }
 
-    pub async fn revert(&self) -> Result<(), CommandError> {
+    pub async fn revert(&self, _: String) -> Result<(), CommandError> {
         Ok(())
     }
 }

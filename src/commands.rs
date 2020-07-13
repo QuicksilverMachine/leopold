@@ -67,32 +67,35 @@ impl Display for Command {
     }
 }
 
-pub async fn run_command(command_container: &Command) -> Result<(), CommandError> {
+pub async fn run_command(command_container: &Command, task_id: String) -> Result<(), CommandError> {
     match command_container {
-        Command::DockerImagePull { command } => Ok(command.run().await?),
-        Command::DockerImageList { command } => Ok(command.run().await?),
-        Command::DockerContainerList { command } => Ok(command.run().await?),
-        Command::DockerContainerCreate { command } => Ok(command.run().await?),
-        Command::DockerContainerRemove { command } => Ok(command.run().await?),
-        Command::DockerContainerStart { command } => Ok(command.run().await?),
-        Command::DockerContainerStop { command } => Ok(command.run().await?),
-        Command::DockerContainerRestart { command } => Ok(command.run().await?),
-        Command::DockerVersion { command } => Ok(command.run().await?),
-        Command::Sleep { command } => Ok(command.run().await?),
+        Command::DockerImagePull { command } => Ok(command.run(task_id).await?),
+        Command::DockerImageList { command } => Ok(command.run(task_id).await?),
+        Command::DockerContainerList { command } => Ok(command.run(task_id).await?),
+        Command::DockerContainerCreate { command } => Ok(command.run(task_id).await?),
+        Command::DockerContainerRemove { command } => Ok(command.run(task_id).await?),
+        Command::DockerContainerStart { command } => Ok(command.run(task_id).await?),
+        Command::DockerContainerStop { command } => Ok(command.run(task_id).await?),
+        Command::DockerContainerRestart { command } => Ok(command.run(task_id).await?),
+        Command::DockerVersion { command } => Ok(command.run(task_id).await?),
+        Command::Sleep { command } => Ok(command.run(task_id).await?),
     }
 }
 
-pub async fn revert_command(command_container: &Command) -> Result<(), CommandError> {
+pub async fn revert_command(
+    command_container: &Command,
+    task_id: String,
+) -> Result<(), CommandError> {
     match command_container {
-        Command::DockerImagePull { command } => Ok(command.revert().await?),
-        Command::DockerImageList { command } => Ok(command.revert().await?),
-        Command::DockerContainerList { command } => Ok(command.revert().await?),
-        Command::DockerContainerCreate { command } => Ok(command.revert().await?),
-        Command::DockerContainerRemove { command } => Ok(command.revert().await?),
-        Command::DockerContainerStart { command } => Ok(command.revert().await?),
-        Command::DockerContainerStop { command } => Ok(command.revert().await?),
-        Command::DockerContainerRestart { command } => Ok(command.revert().await?),
-        Command::DockerVersion { command } => Ok(command.revert().await?),
-        Command::Sleep { command } => Ok(command.revert().await?),
+        Command::DockerImagePull { command } => Ok(command.revert(task_id).await?),
+        Command::DockerImageList { command } => Ok(command.revert(task_id).await?),
+        Command::DockerContainerList { command } => Ok(command.revert(task_id).await?),
+        Command::DockerContainerCreate { command } => Ok(command.revert(task_id).await?),
+        Command::DockerContainerRemove { command } => Ok(command.revert(task_id).await?),
+        Command::DockerContainerStart { command } => Ok(command.revert(task_id).await?),
+        Command::DockerContainerStop { command } => Ok(command.revert(task_id).await?),
+        Command::DockerContainerRestart { command } => Ok(command.revert(task_id).await?),
+        Command::DockerVersion { command } => Ok(command.revert(task_id).await?),
+        Command::Sleep { command } => Ok(command.revert(task_id).await?),
     }
 }

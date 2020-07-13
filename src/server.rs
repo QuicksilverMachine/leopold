@@ -3,16 +3,12 @@ use std::io::Result;
 use actix_web::middleware::Logger;
 use actix_web::{web, App, HttpServer};
 
-use crate::api;
+use crate::{api, logger};
 
 pub async fn run() -> Result<()> {
-    std::env::set_var("RUST_LOG", "info");
-    env_logger::init();
-
-    info!("Starting Leopold server.");
     HttpServer::new(|| {
         App::new()
-            .wrap(Logger::default())
+            .wrap(Logger::new(logger::SERVER_LOG_FORMAT))
             .route("/status", web::get().to(api::status::handlers::status))
             .route("/task/run", web::post().to(api::tasks::handlers::run))
     })

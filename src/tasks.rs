@@ -34,14 +34,14 @@ pub async fn run_task(app: String, task_key: String, task_id: String) {
     match run_commands(&configuration.tasks[&task_key], task_id.clone()).await {
         Err(error) => {
             if error.completed_tasks.is_empty() {
-                logger::task_error(task_id.clone(), "Task failed");
+                logger::task_error(&task_id, "Task failed");
             } else {
-                logger::task_error(task_id.clone(), "Task failed, attempting revert");
+                logger::task_error(&task_id, "Task failed, attempting revert");
             }
             match revert_commands(&error.completed_tasks, task_id.clone()).await {
                 Err(error) => {
                     logger::task_error(
-                        task_id.clone(),
+                        &task_id,
                         format!(
                             "Task revert failed for {} due to error: {}",
                             task_key, error.message

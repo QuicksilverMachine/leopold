@@ -53,16 +53,16 @@ pub enum Command {
 impl Display for Command {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
         match &self {
-            Command::DockerImagePull { command: _ } => write!(f, "DockerImagePull"),
-            Command::DockerImageList { command: _ } => write!(f, "DockerImageList"),
-            Command::DockerContainerList { command: _ } => write!(f, "DockerContainerList"),
-            Command::DockerContainerCreate { command: _ } => write!(f, "DockerContainerCreate"),
-            Command::DockerContainerRemove { command: _ } => write!(f, "DockerContainerRemove"),
-            Command::DockerContainerStart { command: _ } => write!(f, "DockerContainerStart"),
-            Command::DockerContainerStop { command: _ } => write!(f, "DockerContainerStop"),
-            Command::DockerContainerRestart { command: _ } => write!(f, "DockerContainerRestart"),
-            Command::DockerVersion { command: _ } => write!(f, "DockerVersion"),
-            Command::Sleep { command: _ } => write!(f, "Sleep"),
+            Command::DockerImagePull { .. } => write!(f, "DockerImagePull"),
+            Command::DockerImageList { .. } => write!(f, "DockerImageList"),
+            Command::DockerContainerList { .. } => write!(f, "DockerContainerList"),
+            Command::DockerContainerCreate { .. } => write!(f, "DockerContainerCreate"),
+            Command::DockerContainerRemove { .. } => write!(f, "DockerContainerRemove"),
+            Command::DockerContainerStart { .. } => write!(f, "DockerContainerStart"),
+            Command::DockerContainerStop { .. } => write!(f, "DockerContainerStop"),
+            Command::DockerContainerRestart { .. } => write!(f, "DockerContainerRestart"),
+            Command::DockerVersion { .. } => write!(f, "DockerVersion"),
+            Command::Sleep { .. } => write!(f, "Sleep"),
         }
     }
 }

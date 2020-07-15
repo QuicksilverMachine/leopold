@@ -5,7 +5,6 @@ static SERVER: &'static str = "SERVER";
 static TASK: &'static str = "TASK";
 
 pub fn configure_logging() {
-    std::env::set_var("MY_LOG_STYLE", "auto");
     std::env::set_var("RUST_LOG", "info,actix_web=info");
 
     env_logger::builder()
@@ -18,7 +17,7 @@ pub fn configure_logging() {
                     args.escape_default()
                 );
             }
-            writeln!(buffer, r#"{{"level": "{}", {}}},"#, record.level(), args)
+            writeln!(buffer, r#"{{"level": "{}", {}}}"#, record.level(), args)
         })
         .init();
 }

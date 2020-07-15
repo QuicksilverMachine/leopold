@@ -1,18 +1,57 @@
 use std::io::Write;
 
-pub static SERVER_LOG_FORMAT: &'static str = "%a %r %s %b %{Referer}i %{User-Agent}i %T";
+static ACCESS: &'static str = "ACCESS";
+static SERVER: &'static str = "SERVER";
+static TASK: &'static str = "TASK";
 
-pub async fn configure_logging() {
-    std::env::set_var("RUST_LOG", "info");
+pub fn configure_logging() {
+    std::env::set_var("MY_LOG_STYLE", "auto");
+    std::env::set_var("RUST_LOG", "info,actix_web=info");
+
     env_logger::builder()
-        .format(|buf, record| writeln!(buf, "[{}] {}", record.level(), record.args()))
+        .format(|buffer, record| {
+            let mut args = format!("{}", record.args());
+            if !args.contains("log_type") {
+                args = format!(
+                    r#""log_info": "{}", "message": "{}" "#,
+                    SERVER,
+                    args.escape_default()
+                );
+            }
+            writeln!(buffer, r#"{{"level": "{}", {}}},"#, record.level(), args)
+        })
         .init();
 }
 
+pub fn server_log_format() -> String {
+    format!(
+        r#""log_type": "{}", "url": "%U", "user_ip": "%a", "request": "%r", "status": %s, "size": %b, "referer": "%{{Referer}}i", "user_agent": "%{{User-Agent}}i", "time_ms": "%D""#,
+        ACCESS
+    )
+}
+
+pub fn info(message: String) {
+    info!(
+        r#""log_type": "{}", "message": "{}""#,
+        SERVER,
+        message.escape_default()
+    )
+}
+
 pub fn task_info(task_id: String, message: String) {
-    info!("[{}] {}", task_id, message)
+    info!(
+        r#""log_type": "{}", "task_id": "{}", "message": "{}""#,
+        TASK,
+        task_id,
+        message.escape_default()
+    )
 }
 
 pub fn task_error(task_id: String, message: String) {
-    error!("[{}] {}", task_id, message)
+    error!(
+        r#""log_type": "{}", "task_id": "{}", "message": "{}""#,
+        TASK,
+        task_id,
+        message.escape_default()
+    )
 }

@@ -8,5 +8,5 @@ pub struct TaskRunRequest {
 
 #[derive(Serialize)]
 pub struct TaskRunResponse {
-    pub message: String,
+    pub task_id: String,
 }

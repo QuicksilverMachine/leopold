@@ -32,15 +32,15 @@ pub async fn run_task(app: String, task_key: String, task_id: String) {
         return;
     }
 
-    info!("Running task: {}", task_id);
+    logger::info("Running task".to_string());
     match run_commands(&configuration.tasks[&task_key], task_id.clone()).await {
         Err(error) => {
             if error.completed_tasks.is_empty() {
-                logger::task_error(task_id.clone(), format!("Task failed: \"{}\"", task_key));
+                logger::task_error(task_id.clone(), "Task failed".to_string());
             } else {
                 logger::task_error(
                     task_id.clone(),
-                    format!("Task failed: \"{}\", attempting revert", task_key),
+                    "Task failed, attempting revert".to_string(),
                 );
             }
             match revert_commands(&error.completed_tasks, task_id.clone()).await {
@@ -48,18 +48,18 @@ pub async fn run_task(app: String, task_key: String, task_id: String) {
                     logger::task_error(
                         task_id.clone(),
                         format!(
-                            "Task revert failed for \"{}\" due to error: {}",
+                            "Task revert failed for {} due to error: {}",
                             task_key, error.message
                         ),
                     );
                 }
                 _ => {
-                    logger::task_info(task_id.clone(), format!("Task reverted: \"{}\"", task_key));
+                    logger::task_info(task_id.clone(), "Task reverted".to_string());
                 }
             };
         }
         _ => {
-            logger::task_info(task_id.clone(), format!("Task completed: \"{}\"", task_key));
+            logger::task_info(task_id.clone(), "Task completed".to_string());
         }
     };
 }
@@ -69,13 +69,13 @@ async fn run_commands(commands: &[Command], task_id: String) -> Result<(), TaskE
     for command in commands {
         logger::task_info(
             task_id.clone(),
-            format!("Running command: \"{}\"", command.to_string()),
+            format!("Running command: {}", command.to_string()),
         );
         match run_command(command, task_id.clone()).await {
             Err(error) => {
                 logger::task_error(
                     task_id.clone(),
-                    format!("Command failed: \"{}\"", command.to_string()),
+                    format!("Command failed: {}", command.to_string()),
                 );
                 Err(TaskError {
                     message: error.message,
@@ -86,7 +86,7 @@ async fn run_commands(commands: &[Command], task_id: String) -> Result<(), TaskE
                 completed.push(command.clone());
                 logger::task_info(
                     task_id.clone(),
-                    format!("Command completed: \"{}\"", command.to_string()),
+                    format!("Command completed: {}", command.to_string()),
                 );
                 Ok(())
             }

@@ -14,8 +14,7 @@ extern crate log;
 
 #[actix_rt::main]
 async fn main() -> Result<()> {
-    logger::configure_logging().await;
-    info!("Starting Leopold server");
-
+    logger::configure_logging();
+    logger::info("Starting Leopold server".to_string());
     server::run().await
 }

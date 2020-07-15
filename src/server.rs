@@ -8,7 +8,7 @@ use crate::{api, logger};
 pub async fn run() -> Result<()> {
     HttpServer::new(|| {
         App::new()
-            .wrap(Logger::new(logger::SERVER_LOG_FORMAT))
+            .wrap(Logger::new(&logger::server_log_format()))
             .route("/status", web::get().to(api::status::handlers::status))
             .route("/task/run", web::post().to(api::tasks::handlers::run))
     })

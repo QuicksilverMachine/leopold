@@ -1,7 +1,6 @@
 use std::time::Duration;
 
 use serde::Deserialize;
-use tokio;
 
 use crate::errors::CommandError;
 

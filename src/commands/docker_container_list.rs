@@ -12,7 +12,7 @@ impl DockerContainerList {
     pub async fn run(&self, task_id: String) -> Result<(), CommandError> {
         let containers = docker::commands::container_list().await?;
         for container in containers {
-            logger::task_info(task_id.clone(), format!("{}", container.name))
+            logger::task_info(task_id.clone(), container.name)
         }
         Ok(())
     }

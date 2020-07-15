@@ -30,9 +30,10 @@ impl From<ImageSummary> for Image {
     fn from(api_image: ImageSummary) -> Self {
         let default_tag = "<none>:<none>".to_string();
         let default_tags = vec!["<none>:<none>".to_string()];
-        let tags = match api_image.repo_tags.is_empty() {
-            true => default_tags.clone(),
-            _ => api_image.repo_tags,
+        let tags = if api_image.repo_tags.is_empty() {
+            default_tags
+        } else {
+            api_image.repo_tags
         };
         let data = {
             tags.first()
@@ -89,7 +90,7 @@ impl From<DockerContainerPortBinding> for APIDockerContainerPortBinding {
 
         APIDockerContainerPortBinding {
             internal_port: port_bindings.internal_port,
-            external_ports: external_ports.clone(),
+            external_ports,
         }
     }
 }

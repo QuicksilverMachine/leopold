@@ -1,8 +1,8 @@
 use std::io::Write;
 
-static ACCESS: &'static str = "ACCESS";
-static SERVER: &'static str = "SERVER";
-static TASK: &'static str = "TASK";
+static ACCESS: &str = "ACCESS";
+static SERVER: &str = "SERVER";
+static TASK: &str = "TASK";
 
 pub fn configure_logging() {
     std::env::set_var("RUST_LOG", "info,actix_web=info");
@@ -29,28 +29,28 @@ pub fn server_log_format() -> String {
     )
 }
 
-pub fn info(message: String) {
+pub fn info<T: AsRef<str>>(message: T) {
     info!(
         r#""log_type": "{}", "message": "{}""#,
         SERVER,
-        message.escape_default()
+        message.as_ref().escape_default()
     )
 }
 
-pub fn task_info(task_id: String, message: String) {
+pub fn task_info<T1: AsRef<str>, T2: AsRef<str>>(task_id: T1, message: T2) {
     info!(
         r#""log_type": "{}", "task_id": "{}", "message": "{}""#,
         TASK,
-        task_id,
-        message.escape_default()
+        task_id.as_ref(),
+        message.as_ref().escape_default()
     )
 }
 
-pub fn task_error(task_id: String, message: String) {
+pub fn task_error<T1: AsRef<str>, T2: AsRef<str>>(task_id: T1, message: T2) {
     error!(
         r#""log_type": "{}", "task_id": "{}", "message": "{}""#,
         TASK,
-        task_id,
-        message.escape_default()
+        task_id.as_ref(),
+        message.as_ref().escape_default()
     )
 }

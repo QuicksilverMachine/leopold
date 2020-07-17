@@ -13,7 +13,7 @@ pub async fn run_task(app: String, task_key: String, task_id: String) {
     let configuration = match configuration::read(&app).await {
         Ok(configuration) => configuration,
         Err(error) => {
-            logger::task_error(
+            logger::error_task_meta(
                 task_id,
                 format!("Error occurred while fetching app configuration: {}", error),
             );
@@ -23,7 +23,7 @@ pub async fn run_task(app: String, task_key: String, task_id: String) {
 
     // Check if requested task exists for selected app
     if !&configuration.tasks.contains_key(&task_key) {
-        logger::task_error(
+        logger::error_task_meta(
             task_id,
             format!("Task not found: \"{}\" for app \"{}\"", task_key, app),
         );
@@ -34,13 +34,13 @@ pub async fn run_task(app: String, task_key: String, task_id: String) {
     match run_commands(&configuration.tasks[&task_key], task_id.clone()).await {
         Err(error) => {
             if error.completed_tasks.is_empty() {
-                logger::task_error(&task_id, "Task failed");
+                logger::error_task_meta(&task_id, "Task failed");
             } else {
-                logger::task_error(&task_id, "Task failed, attempting revert");
+                logger::error_task_meta(&task_id, "Task failed, attempting revert");
             }
             match revert_commands(&error.completed_tasks, task_id.clone()).await {
                 Err(error) => {
-                    logger::task_error(
+                    logger::error_task_meta(
                         &task_id,
                         format!(
                             "Task revert failed for {} due to error: {}",
@@ -49,12 +49,12 @@ pub async fn run_task(app: String, task_key: String, task_id: String) {
                     );
                 }
                 _ => {
-                    logger::task_info(&task_id, "Task reverted");
+                    logger::info_task_meta(&task_id, "Task reverted");
                 }
             };
         }
         _ => {
-            logger::task_info(task_id, "Task completed");
+            logger::info_task_meta(task_id, "Task completed");
         }
     };
 }
@@ -62,10 +62,11 @@ pub async fn run_task(app: String, task_key: String, task_id: String) {
 async fn run_commands(commands: &[Command], task_id: String) -> Result<(), TaskError> {
     let mut completed: Vec<Command> = Vec::new();
     for command in commands {
-        logger::task_info(&task_id, format!("Running command: {}", command));
+        logger::info_task_meta(&task_id, format!("Running command: {}", command));
         match run_command(command, task_id.clone()).await {
             Err(error) => {
-                logger::task_error(&task_id, format!("Command failed: {}", command));
+                logger::error_task_meta(&task_id, format!("Command failed: {}", command));
+                logger::error_task(&task_id, &error.message);
                 Err(TaskError {
                     message: error.message,
                     completed_tasks: completed.clone(),
@@ -73,7 +74,7 @@ async fn run_commands(commands: &[Command], task_id: String) -> Result<(), TaskE
             }
             Ok(_) => {
                 completed.push(command.clone());
-                logger::task_info(&task_id, format!("Command completed: {}", command));
+                logger::info_task_meta(&task_id, format!("Command completed: {}", command));
                 Ok(())
             }
         }?;

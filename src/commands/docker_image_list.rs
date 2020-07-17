@@ -12,7 +12,7 @@ impl DockerImageList {
     pub async fn run(&self, task_id: String) -> Result<(), CommandError> {
         let images = docker::commands::image_list().await?;
         for image in images {
-            logger::task_info(task_id.clone(), format!("{}:{}", image.name, image.tag))
+            logger::info_task(task_id.clone(), format!("{}:{}", image.name, image.tag))
         }
         Ok(())
     }

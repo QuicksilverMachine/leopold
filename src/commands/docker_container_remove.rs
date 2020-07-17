@@ -13,10 +13,7 @@ pub struct DockerContainerRemove {
 impl DockerContainerRemove {
     pub async fn run(&self, task_id: String) -> Result<(), CommandError> {
         docker::commands::container_remove(&self.name, self.force.unwrap_or(true)).await?;
-        logger::task_info(
-            task_id.clone(),
-            format!("Container \"{}\" removed", &self.name),
-        );
+        logger::info_task(task_id.clone(), &self.name);
         Ok(())
     }
 

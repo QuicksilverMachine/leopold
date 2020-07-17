@@ -11,10 +11,7 @@ pub struct DockerVersion {
 impl DockerVersion {
     pub async fn run(&self, task_id: String) -> Result<(), CommandError> {
         let version = docker::commands::version().await?;
-        logger::task_info(
-            task_id.clone(),
-            format!("Docker engine version: {}", version),
-        );
+        logger::info_task(task_id.clone(), version);
         Ok(())
     }
 

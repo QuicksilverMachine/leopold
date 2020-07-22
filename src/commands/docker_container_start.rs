@@ -7,6 +7,7 @@ use crate::errors::CommandError;
 pub struct DockerContainerStart {
     description: Option<String>,
     name: String,
+    timeout: Option<i64>,
 }
 
 impl DockerContainerStart {
@@ -16,6 +17,11 @@ impl DockerContainerStart {
     }
 
     pub async fn revert(&self, _: String) -> Result<(), CommandError> {
+        docker::commands::container_stop(
+            &self.name,
+            self.timeout.unwrap_or(docker::models::DEFAULT_TIMEOUT),
+        )
+        .await?;
         Ok(())
     }
 }

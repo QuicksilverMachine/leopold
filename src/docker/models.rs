@@ -1,6 +1,8 @@
 use bollard::models::{ContainerInspectResponse, ContainerSummaryInner, ImageSummary, PortBinding};
 use serde::{Deserialize, Serialize};
 
+pub static DEFAULT_TIMEOUT: i64 = 10;
+
 #[derive(Serialize, Deserialize)]
 pub struct Image {
     pub name: String,

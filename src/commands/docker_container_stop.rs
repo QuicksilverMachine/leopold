@@ -10,16 +10,18 @@ pub struct DockerContainerStop {
     timeout: Option<i64>,
 }
 
-static DEFAULT_TIMEOUT: i64 = 10;
-
 impl DockerContainerStop {
     pub async fn run(&self, _: String) -> Result<(), CommandError> {
-        docker::commands::container_stop(&self.name, self.timeout.unwrap_or(DEFAULT_TIMEOUT))
-            .await?;
+        docker::commands::container_stop(
+            &self.name,
+            self.timeout.unwrap_or(docker::models::DEFAULT_TIMEOUT),
+        )
+        .await?;
         Ok(())
     }
 
     pub async fn revert(&self, _: String) -> Result<(), CommandError> {
+        docker::commands::container_start(&self.name).await?;
         Ok(())
     }
 }

@@ -47,11 +47,15 @@ tasks:
     - id: DockerContainerRestart
       command:
         name: container_name
-  test_inheritance:
-    - list_containers
-    - docker_version
   sleep:
     - id: Sleep
       command:
         description: Sleep for specified number of seconds
         duration: 5
+  test_inheritance:
+    - list_containers
+    - docker_version
+  test_inheritance_nested:
+    - test_inheritance
+  test_inheritance_nested_deep:
+    - test_inheritance_nested

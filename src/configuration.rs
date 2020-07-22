@@ -49,7 +49,7 @@ async fn preprocess_commands(
                 let command_values = app_config.tasks[task_key].clone();
                 processed_app_config.tasks.insert(
                     task_key.to_string(),
-                    convert_commands(command_values).await?,
+                    convert_commands(command_values, None)?,
                 );
             } else {
                 // Task found, replace with associated commands
@@ -57,7 +57,7 @@ async fn preprocess_commands(
                 if app_config.tasks.contains_key(replaceable_task) {
                     let command_values = app_config.tasks[replaceable_task].clone();
 
-                    let converted = convert_commands(command_values).await?;
+                    let converted = convert_commands(command_values, Some(&app_config))?;
                     if !processed_app_config.tasks.contains_key(task_key) {
                         // First command to be added
                         processed_app_config
@@ -83,15 +83,31 @@ async fn preprocess_commands(
             }
         }
     }
-    let processed_app_config = processed_app_config;
     Ok(processed_app_config)
 }
 
-async fn convert_commands(command_values: Vec<Value>) -> Result<Vec<Command>, Box<dyn Error>> {
+fn convert_commands(
+    command_values: Vec<Value>,
+    app_config: Option<&UnprocessedAppConfiguration>,
+) -> Result<Vec<Command>, Box<dyn Error>> {
     let mut found_commands: Vec<Command> = Vec::new();
     for command_value in command_values {
-        found_commands.push(serde_yaml::from_value(command_value)?);
+        if command_value.is_string() {
+            let new_command_values = replace_command(command_value, app_config.unwrap())?;
+            let converted = convert_commands(new_command_values, app_config)?;
+            found_commands.extend(converted);
+        } else {
+            found_commands.push(serde_yaml::from_value(command_value)?);
+        }
     }
-    let found_commands = found_commands;
     Ok(found_commands)
+}
+
+fn replace_command(
+    command: Value,
+    app_config: &UnprocessedAppConfiguration,
+) -> Result<Vec<Value>, Box<dyn Error>> {
+    let replaceable_task = command.as_str().unwrap_or_default();
+    let command_values = app_config.tasks[replaceable_task].clone();
+    Ok(command_values)
 }

@@ -959,6 +959,7 @@ dependencies = [
  "env_logger",
  "futures",
  "log 0.4.8",
+ "regex",
  "serde",
  "serde_json",
  "serde_yaml",

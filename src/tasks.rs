@@ -1,16 +1,27 @@
+use std::collections::HashMap;
+
 use crate::commands::{revert_command, run_command, Command};
 use crate::configuration;
 use crate::errors::TaskError;
-
 use crate::logger;
 
-pub async fn run(app: &str, task_key: &str, task_id: &str) {
-    let future = run_task(app.to_string(), task_key.to_string(), task_id.to_string());
+pub async fn run(app: &str, task_key: &str, kwargs: HashMap<String, String>, task_id: &str) {
+    let future = run_task(
+        app.to_string(),
+        task_key.to_string(),
+        kwargs,
+        task_id.to_string(),
+    );
     tokio::spawn(future);
 }
 
-pub async fn run_task(app: String, task_key: String, task_id: String) {
-    let configuration = match configuration::read(&app).await {
+pub async fn run_task(
+    app: String,
+    task_key: String,
+    kwargs: HashMap<String, String>,
+    task_id: String,
+) {
+    let configuration = match configuration::read(&app, kwargs).await {
         Ok(configuration) => configuration,
         Err(error) => {
             logger::error_task_meta(

@@ -30,9 +30,7 @@ pub fn configure_logging() {
 }
 
 pub fn server_time_format() -> String {
-    Local::now()
-        .to_rfc3339_opts(SecondsFormat::Millis, true)
-        .to_string()
+    Local::now().to_rfc3339_opts(SecondsFormat::Millis, true)
 }
 
 pub fn server_log_format() -> String {

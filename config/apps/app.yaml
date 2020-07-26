@@ -22,14 +22,14 @@ tasks:
     - id: DockerContainerCreate
       command:
         description: New container
-        image: "nginx:latest"
+        image: nginx:<<image_version>>
         name: container_name
         mounts: []
         ports:
-          - host: "127.0.0.1"
-            internal_port: "80/tcp"
+          - host: 127.0.0.1
+            internal_port: 80/tcp
             external_ports:
-              - "0/tcp"
+              - 0/tcp
   remove_container:
     - id: DockerContainerRemove
       command:

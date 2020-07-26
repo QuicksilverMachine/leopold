@@ -3,6 +3,7 @@ use std::error::Error;
 use std::fs::File;
 use std::io::Read;
 
+use regex::{NoExpand, Regex};
 use serde::Deserialize;
 use serde_yaml::Value;
 
@@ -19,19 +20,58 @@ pub struct AppConfiguration {
     pub tasks: HashMap<String, Vec<Command>>,
 }
 
-pub async fn read(app: &str) -> Result<AppConfiguration, Box<dyn Error>> {
-    let app_config = read_config(&app).await?;
+pub async fn read(
+    app: &str,
+    kwargs: HashMap<String, String>,
+) -> Result<AppConfiguration, Box<dyn Error>> {
+    let app_config = read_config(&app, kwargs).await?;
     let processed_app_config = preprocess_commands(app_config).await?;
     Ok(processed_app_config)
 }
 
-async fn read_config(name: &str) -> Result<UnprocessedAppConfiguration, Box<dyn Error>> {
+async fn read_config(
+    name: &str,
+    kwargs: HashMap<String, String>,
+) -> Result<UnprocessedAppConfiguration, Box<dyn Error>> {
     let config_file = format!("config/apps/{}.yaml", name);
     let mut file = File::open(config_file)?;
     let mut contents = String::new();
     file.read_to_string(&mut contents)?;
+
+    let contents = insert_variables(&contents, kwargs).await?;
+
     let app_config: UnprocessedAppConfiguration = serde_yaml::from_str(&contents)?;
     Ok(app_config)
+}
+
+async fn insert_variables(
+    config_contents: &str,
+    kwargs: HashMap<String, String>,
+) -> Result<String, Box<dyn Error>> {
+    let regex = Regex::new(r"<<[a-z_0-9\s]+>>")?;
+    let mut result = config_contents.to_string();
+    let mut processed: Vec<String> = Vec::new();
+
+    // Replace each found variable with value
+    for var in regex.captures_iter(config_contents) {
+        let var_name = &var[0]
+            .strip_prefix("<<")
+            .unwrap()
+            .strip_suffix(">>")
+            .unwrap()
+            .trim();
+
+        // Skip already processed
+        if processed.contains(&var_name.to_string()) {
+            continue;
+        }
+
+        // Find value corresponding to var_name
+        let value = kwargs[&var_name.to_string()].clone();
+        result = regex.replace_all(&result, NoExpand(&value)).to_string();
+        processed.push(var_name.to_string());
+    }
+    Ok(result)
 }
 
 async fn preprocess_commands(

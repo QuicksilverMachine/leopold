@@ -67,8 +67,18 @@ async fn insert_variables(
         }
 
         // Find value corresponding to var_name
-        let value = kwargs[&var_name.to_string()].clone();
-        result = regex.replace_all(&result, NoExpand(&value)).to_string();
+        let value = kwargs.get(&var_name.to_string());
+        if value.is_none() {
+            return Err(Box::new(AppConfigError {
+                message: format!(
+                    "Cannot parse config, value not provided for variable: {}",
+                    var_name
+                ),
+            }));
+        }
+        result = regex
+            .replace_all(&result, NoExpand(&value.unwrap()))
+            .to_string();
         processed.push(var_name.to_string());
     }
     Ok(result)

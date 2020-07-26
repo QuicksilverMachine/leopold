@@ -1,4 +1,7 @@
-use bollard::models::{ContainerInspectResponse, ContainerSummaryInner, ImageSummary, PortBinding};
+use bollard::models::{
+    ContainerInspectResponse, ContainerSummaryInner, ImageSummary, Mount, MountTypeEnum,
+    PortBinding,
+};
 use serde::{Deserialize, Serialize};
 
 pub static DEFAULT_TIMEOUT: i64 = 10;
@@ -25,6 +28,13 @@ pub struct DockerContainerPortBinding {
 pub struct APIDockerContainerPortBinding {
     pub internal_port: String,
     pub external_ports: Vec<PortBinding>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DockerContainerMountBinding {
+    pub target: String,
+    pub source: String,
+    pub read_only: bool,
 }
 
 /// Convert ImageSummary to local image format
@@ -102,6 +112,18 @@ impl From<ContainerInspectResponse> for Container {
     fn from(api_container: ContainerInspectResponse) -> Self {
         Container {
             name: api_container.name.unwrap_or_default(),
+        }
+    }
+}
+
+impl From<DockerContainerMountBinding> for Mount {
+    fn from(mount_binding: DockerContainerMountBinding) -> Self {
+        Mount {
+            target: Some(mount_binding.target),
+            source: Some(mount_binding.source),
+            read_only: Some(mount_binding.read_only),
+            _type: Some(MountTypeEnum::BIND),
+            ..Default::default()
         }
     }
 }

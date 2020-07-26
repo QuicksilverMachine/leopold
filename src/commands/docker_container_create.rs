@@ -8,7 +8,7 @@ pub struct DockerContainerCreate {
     description: Option<String>,
     image: String,
     name: String,
-    mounts: Option<Vec<String>>,
+    mounts: Option<Vec<docker::models::DockerContainerMountBinding>>,
     ports: Option<Vec<docker::models::DockerContainerPortBinding>>,
 }
 

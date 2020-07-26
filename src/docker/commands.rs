@@ -5,11 +5,14 @@ use bollard::container::{
     RemoveContainerOptions, RestartContainerOptions, StartContainerOptions, StopContainerOptions,
 };
 use bollard::image::{CreateImageOptions, ListImagesOptions, RemoveImageOptions};
-use bollard::models::HostConfig;
+use bollard::models::{HostConfig, Mount};
 use bollard::Docker;
 use futures::StreamExt;
 
-use super::models::{APIDockerContainerPortBinding, Container, DockerContainerPortBinding, Image};
+use super::models::{
+    APIDockerContainerPortBinding, Container, DockerContainerMountBinding,
+    DockerContainerPortBinding, Image,
+};
 use crate::errors::DockerError;
 
 /// Return docker engine version
@@ -101,7 +104,7 @@ pub async fn container_list() -> Result<Vec<Container>, DockerError> {
 pub async fn container_create(
     image: &str,
     name: &str,
-    _mounts: Vec<String>,
+    mounts: Vec<DockerContainerMountBinding>,
     ports: Vec<DockerContainerPortBinding>,
 ) -> Result<Container, DockerError> {
     let docker = docker_connection().await?;
@@ -112,8 +115,14 @@ pub async fn container_create(
         port_bindings.insert(binding.internal_port, Some(binding.external_ports));
     }
 
+    let mut mount_bindings = Vec::new();
+    for binding in mounts {
+        mount_bindings.push(Mount::from(binding));
+    }
+
     let host_config = HostConfig {
-        port_bindings: Some(port_bindings.clone()),
+        mounts: Some(mount_bindings),
+        port_bindings: Some(port_bindings),
         network_mode: Some("bridge".to_string()),
         ..Default::default()
     };

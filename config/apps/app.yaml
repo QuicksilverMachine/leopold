@@ -24,7 +24,10 @@ tasks:
         description: New container
         image: nginx:<<image_version>>
         name: container_name
-        mounts: []
+        mounts:
+          - target: /tmp
+            source: /tmp
+            read_only: false
         ports:
           - host: 127.0.0.1
             internal_port: 80/tcp

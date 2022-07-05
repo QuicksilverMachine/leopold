@@ -1,5 +1,5 @@
-use chrono::{Local, SecondsFormat};
 use std::io::Write;
+use std::time::SystemTime;
 
 static ACCESS: &str = "ACCESS";
 static SERVER: &str = "SERVER";
@@ -30,7 +30,7 @@ pub fn configure_logging() {
 }
 
 pub fn server_time_format() -> String {
-    Local::now().to_rfc3339_opts(SecondsFormat::Millis, true)
+    format!("{:?}", SystemTime::now())
 }
 
 pub fn server_log_format() -> String {

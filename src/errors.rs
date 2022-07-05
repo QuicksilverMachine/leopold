@@ -1,7 +1,6 @@
 use std::error::Error;
-use std::fmt::Display;
+use std::fmt::{Display, Formatter};
 
-use serde::export::Formatter;
 
 use crate::commands::Command;
 

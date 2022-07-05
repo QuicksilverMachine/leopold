@@ -19,7 +19,7 @@ use crate::errors::DockerError;
 pub async fn version() -> Result<String, DockerError> {
     let docker = docker_connection().await?;
     let version = docker.version().await?.version;
-    Ok(version)
+    Ok(version.unwrap())
 }
 
 /// Generate a docker daemon connection
